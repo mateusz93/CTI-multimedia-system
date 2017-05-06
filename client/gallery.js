@@ -1,5 +1,3 @@
-console.info($('#gallery'));
-
 //GalleryException
 function GalleryException(msg)
 {
@@ -15,12 +13,24 @@ function Gallery(elementID, objects)
     var element = $('#' + elementID);
     var galleryObjects = objects || [];
     var currentObjectIndex = 0;
+    var currentlyDisplayed = [];
     //TODO: Preload all objects for faster response times
     var loadNextImage = function(){
         var obj = galleryObjects[currentObjectIndex];
         obj.addEventListener('stop', loadNextImage);
-        element.html(obj.getLayout());
-        obj.start();
+        var layout = $(obj.getLayout());
+        layout.hide();
+        element.append(layout);
+        layout.show('slide', {direction: 'right'}, 500, function(){
+            obj.start();
+        });
+        while (currentlyDisplayed.length > 0)
+        {
+            currentlyDisplayed.pop().hide('slide', {direction: 'left'}, 500, function(){
+                $(this).remove();
+            });
+        }
+        currentlyDisplayed.push(layout);
         currentObjectIndex++;
         if (currentObjectIndex >= galleryObjects.length) currentObjectIndex -= galleryObjects.length;
     };
@@ -81,7 +91,7 @@ ImageGalleryObject.prototype.start = function() {
 function VideoGalleryObject(url)
 {
     GalleryObject.call(this, url);
-    this.video = $('<video controls class="video-object"><source src="' + this.url + '" type="video/mp4">Your browser doesn\'t support HTML5 video tag.</video>');
+    this.video = $('<video class="video-object"><source src="' + this.url + '" type="video/mp4">Your browser doesn\'t support HTML5 video tag.</video>');
 }
 VideoGalleryObject.prototype = Object.create(GalleryObject.prototype);
 VideoGalleryObject.prototype.constructor = VideoGalleryObject;
@@ -99,9 +109,7 @@ gallery.start();
 //TODO:
 /**
  * Dynamiczna aktualizacja tablicy galleryObjects
- * Responsywność obrazów    -> DONE
  * Kółka
- * Animacje przy przechodzeniu
  * Preloading obiektów aby uniknąć pustego ekranu podczas wczytywania
  * Postery dla video?
  */
