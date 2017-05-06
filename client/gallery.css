@@ -1,0 +1,41 @@
+html, body
+{
+    width:100%;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.gallery-container
+{
+    padding: 0;
+    margin: 0;
+}
+
+.gallery-navbar
+{
+    background-image: none;
+    background-color: rgba(34, 34, 34, 0.5);
+}
+.gallery-navbar a.navbar-brand
+{
+    color: #ededed;
+}
+
+.image-object
+{
+    background-size: contain;
+    position: absolute;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+}
+
+.video-object
+{
+    height: 100%;
+    width: 100%;  
+    position: absolute;
+    text-align: center;
+}
