@@ -32,10 +32,14 @@ function Gallery(elementID, objects)
         }
         currentlyDisplayed.push(layout);
         currentObjectIndex++;
-        if (currentObjectIndex >= galleryObjects.length) currentObjectIndex -= galleryObjects.length;
+        if (currentObjectIndex == galleryObjects.length) currentObjectIndex -= galleryObjects.length;
+        else if (currentObjectIndex > galleryObjects.length) currentObjectIndex = 0;
     };
     this.start = function(){
         loadNextImage();
+    };
+    this.setObjects = function(objects){
+        galleryObjects = objects || galleryObjects || [];
     };
 }
 
@@ -80,7 +84,6 @@ function ImageGalleryObject(url)
 ImageGalleryObject.prototype = Object.create(GalleryObject.prototype);
 ImageGalleryObject.prototype.constructor = ImageGalleryObject;
 ImageGalleryObject.prototype.getLayout = function() {
-    // return '<img src="' + this.url + '" style="width: 100%;" />';
     return '<div class="image-object" style="background-image:url(\'' + this.url + '\');"></div>';
 };
 ImageGalleryObject.prototype.start = function() {
@@ -106,9 +109,12 @@ VideoGalleryObject.prototype.start = function() {
 var gallery = new Gallery('gallery', [new ImageGalleryObject('./img/img_01.jpg'), new ImageGalleryObject('./img/img_02.jpg'), new ImageGalleryObject('./img/img_03.jpg'), new VideoGalleryObject('./img/vid_01.mp4'), new VideoGalleryObject('./img/vid_02.mp4')]);
 gallery.start();
 
+window.setTimeout(function(){
+    gallery.setObjects([new ImageGalleryObject('./img/img_04.jpg'), new ImageGalleryObject('./img/img_02.jpg'), new ImageGalleryObject('./img/img_01.jpg'), new VideoGalleryObject('./img/vid_02.mp4'), new ImageGalleryObject('./img/img_03.jpg'), new VideoGalleryObject('./img/vid_01.mp4')]);
+}, 60000);
+
 //TODO:
 /**
- * Dynamiczna aktualizacja tablicy galleryObjects
  * Kółka
  * Preloading obiektów aby uniknąć pustego ekranu podczas wczytywania
  * Postery dla video?
