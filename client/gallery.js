@@ -8,12 +8,14 @@ function GalleryException(msg)
 }
 
 //Gallery
-function Gallery(elementID, objects)
+function Gallery(elementID, objects, options)
 {
     var element = $('#' + elementID);
     var galleryObjects = objects || [];
     var currentObjectIndex = 0;
     var currentlyDisplayed = [];
+    var galleryOptions = options || {};
+    var bubblesContainer = $('<div class="gallery-bubbles-container"></div>');
     //TODO: Preload all objects for faster response times
     var loadNextImage = function(){
         var obj = galleryObjects[currentObjectIndex];
@@ -31,15 +33,43 @@ function Gallery(elementID, objects)
             });
         }
         currentlyDisplayed.push(layout);
+        highlightActiveBubble();
         currentObjectIndex++;
         if (currentObjectIndex == galleryObjects.length) currentObjectIndex -= galleryObjects.length;
         else if (currentObjectIndex > galleryObjects.length) currentObjectIndex = 0;
     };
+    var highlightActiveBubble = function(){
+        if (galleryOptions.displayBubbles)
+        {
+            bubblesContainer.find('.gallery-bubble').removeClass('gallery-bubble-filled');
+            var activeBubble = bubblesContainer.find('.gallery-bubble-' + currentObjectIndex);
+            if (activeBubble.length < 1) activeBubble = bubblesContainer.find('.gallery-bubble-0');
+            activeBubble.addClass('gallery-bubble-filled');
+        }
+    }
+    var drawBubbles = function(){
+        bubblesContainer.empty();
+        for (var i = 0; i < galleryObjects.length; i++)
+        {
+            bubblesContainer.append('<div class="gallery-bubble gallery-bubble-' + i + '"></div>');
+        }
+        bubblesContainer.width(galleryObjects.length * 26); //UGLY
+    };
     this.start = function(){
+        if (galleryOptions.displayBubbles)
+        {
+            element.append(bubblesContainer);
+            drawBubbles();
+        }
         loadNextImage();
     };
     this.setObjects = function(objects){
         galleryObjects = objects || galleryObjects || [];
+        if (galleryOptions.displayBubbles)
+        {
+            drawBubbles();
+            highlightActiveBubble();
+        }
     };
 }
 
@@ -106,7 +136,7 @@ VideoGalleryObject.prototype.start = function() {
     this.video.get(0).play();
 };
 
-var gallery = new Gallery('gallery', [new ImageGalleryObject('./img/img_01.jpg'), new ImageGalleryObject('./img/img_02.jpg'), new ImageGalleryObject('./img/img_03.jpg'), new VideoGalleryObject('./img/vid_01.mp4'), new VideoGalleryObject('./img/vid_02.mp4')]);
+var gallery = new Gallery('gallery', [new ImageGalleryObject('./img/img_01.jpg'), new ImageGalleryObject('./img/img_02.jpg'), new ImageGalleryObject('./img/img_03.jpg'), new VideoGalleryObject('./img/vid_01.mp4'), new VideoGalleryObject('./img/vid_02.mp4')], {displayBubbles: true});
 gallery.start();
 
 window.setTimeout(function(){
