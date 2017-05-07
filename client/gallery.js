@@ -68,8 +68,18 @@ function Gallery(elementID, objects, options)
             })(i);
             bubblesContainer.append(bubble);
         }
-        bubblesContainer.width(galleryObjects.length * 26); //UGLY
+        bubblesContainer.width(galleryObjects.length * galleryOptions.bubbleSize.width);
+        bubblesContainer.height(galleryOptions.bubbleSize.height);
     };
+    var computeBubbleSize = function(){
+        var bubble = document.createElement('div');
+        bubble.className = 'gallery-bubble';
+        var size = {width: 0, height: 0};
+        size.width = $(bubble).outerWidth(true);
+        size.height = $(bubble).outerHeight(true);
+        return size;
+    };
+    galleryOptions.bubbleSize = galleryOptions.bubbleSize || computeBubbleSize();
     this.start = function(){
         if (galleryOptions.displayBubbles)
         {

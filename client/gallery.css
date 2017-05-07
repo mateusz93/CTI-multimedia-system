@@ -42,7 +42,6 @@ html, body
 
 .gallery-bubbles-container
 {
-    height: 26px;
     position: absolute;
     bottom: 5%;
     z-index: 1;
