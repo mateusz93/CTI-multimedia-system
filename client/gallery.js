@@ -18,6 +18,12 @@ function Gallery(elementID, objects, options)
     var bubblesContainer = $('<div class="gallery-bubbles-container"></div>');
     //TODO: Preload all objects for faster response times
     var loadNextImage = function(){
+        for (var i = 0; i < galleryObjects.length; i++)
+        {
+            var obj = galleryObjects[i];
+            obj.removeEventListener('stop', loadNextImage);
+            obj.stop();
+        }
         var obj = galleryObjects[currentObjectIndex];
         obj.addEventListener('stop', loadNextImage);
         var layout = $(obj.getLayout());
@@ -51,7 +57,16 @@ function Gallery(elementID, objects, options)
         bubblesContainer.empty();
         for (var i = 0; i < galleryObjects.length; i++)
         {
-            bubblesContainer.append('<div class="gallery-bubble gallery-bubble-' + i + '"></div>');
+            var bubble = $('<div class="gallery-bubble gallery-bubble-' + i + '"></div>');
+            (function(index){
+                bubble.on('click', function(){
+                    galleryObjects[currentObjectIndex].removeEventListener('stop', loadNextImage);
+                    galleryObjects[currentObjectIndex].stop();
+                    currentObjectIndex = index;
+                    loadNextImage();
+                });
+            })(i);
+            bubblesContainer.append(bubble);
         }
         bubblesContainer.width(galleryObjects.length * 26); //UGLY
     };
@@ -85,6 +100,9 @@ GalleryObject.prototype.getLayout = function() {
 GalleryObject.prototype.start = function() {
     throw new GalleryException('Method start must be redefined in inheriting class!');
 };
+GalleryObject.prototype.stop = function() {
+    throw new GalleryException('Method stop must be redefined in inheriting class!');
+};
 GalleryObject.prototype.addEventListener = function(event, handler) {
     if (this.listeners.filter(function(e, i, a){ return e.event == event && e.handler == handler; }).length < 1)
     {
@@ -110,6 +128,7 @@ GalleryObject.prototype.dispatchEvent = function(event, data) {
 function ImageGalleryObject(url)
 {
     GalleryObject.call(this, url);
+    this.timeout = -1;
 }
 ImageGalleryObject.prototype = Object.create(GalleryObject.prototype);
 ImageGalleryObject.prototype.constructor = ImageGalleryObject;
@@ -117,7 +136,10 @@ ImageGalleryObject.prototype.getLayout = function() {
     return '<div class="image-object" style="background-image:url(\'' + this.url + '\');"></div>';
 };
 ImageGalleryObject.prototype.start = function() {
-    window.setTimeout((function(){ this.dispatchEvent('stop'); }).bind(this), 5000);
+    this.timeout = window.setTimeout((function(){ this.dispatchEvent('stop'); }).bind(this), 5000);
+};
+ImageGalleryObject.prototype.stop = function() {
+    window.clearTimeout(this.timeout);
 };
 
 //VideoGalleryObject
@@ -135,6 +157,11 @@ VideoGalleryObject.prototype.start = function() {
     this.video.on('ended', this.dispatchEvent.bind(this, 'stop'));
     this.video.get(0).play();
 };
+VideoGalleryObject.prototype.stop = function() {
+    this.video.off('ended');
+    this.video.get(0).pause();
+    this.video.get(0).currentTime = 0;
+};
 
 var gallery = new Gallery('gallery', [new ImageGalleryObject('./img/img_01.jpg'), new ImageGalleryObject('./img/img_02.jpg'), new ImageGalleryObject('./img/img_03.jpg'), new VideoGalleryObject('./img/vid_01.mp4'), new VideoGalleryObject('./img/vid_02.mp4')], {displayBubbles: true});
 gallery.start();
@@ -145,7 +172,6 @@ window.setTimeout(function(){
 
 //TODO:
 /**
- * Kółka
  * Preloading obiektów aby uniknąć pustego ekranu podczas wczytywania
  * Postery dla video?
  */
