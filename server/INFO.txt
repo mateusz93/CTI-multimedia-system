@@ -1,0 +1,12 @@
+To do:
+- Podpięcie websocketów
+- Przekazywanie sobie po websockecie wszelkich aktualizacji związanych z harmonogramem.
+- Endpoint do dodawania zdjęcia / video.
+- Widok do dodawania zdjęcia / video.
+- Endpoint do dodawania/usuwania prezentacji (możliwość wyboru dowolnej ilości obrazów/filmów w określonej kolejności)
+- Widok do dodawania prezentacji
+
+Done:
+- Modele bazy danych (początkowy koncepcyjny, pewnie jeszcze do refactoru będzie)
+- Endpoint index - dla podłączania się telewizorów
+- Endpoint z PathVariable po którym będziemy identyfikować telewizor - na podstawie telewizora będziemy z bazy wyciągać aktualną prezentację z bazy danych i ją prezentować.
