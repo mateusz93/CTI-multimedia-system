@@ -42,8 +42,8 @@
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron gallery-container" id="gallery"></div>
 
-    <th:div th:if="${presentation==null}">Brak</th:div>
-    <th:div th:if="${presentation!=null}">Jest</th:div>
+    <script th:if="${presentation==null}">alert("Brak prezentacji!");</script>
+    <script th:if="${presentation!=null}">alert("Jest prezentacja!");</script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -51,5 +51,37 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <!-- Gallery script - Concept -->
     <script src="../js/gallery.js"></script>
+    <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
+    <script th:inline="javascript">
+        var stompClient = null;
+        var hash = [[${hash}]];
+        function connect() {
+            var socket = new SockJS('/cti-websocket');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+              /*setConnected(true);*/
+                alert("Connected successfully!");
+                console.log('Connected: ' + frame);
+                stompClient.subscribe('/topic/schedule', function (schedule) {
+                    alert("Komunikat harmonogramu: Czy istnieje? "+JSON.parse(schedule.body).exists);
+                });
+                firstMessage();
+            });
+        }
+
+        function disconnect() {
+            if (stompClient != null) {
+                stompClient.disconnect();
+            }
+            console.log("Disconnected!");
+        }
+
+        function firstMessage() {
+            stompClient.send("/app/register", {}, JSON.stringify({'hash': hash}));
+        }
+
+        connect();
+    </script>
   </body>
 </html>

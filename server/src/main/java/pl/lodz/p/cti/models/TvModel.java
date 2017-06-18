@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 public class TvModel {
 
     public static final String PROPERTY_HASH = "hash";
+    public static final String PROPERTY_IP = "ip";
 
     @Id
     @GeneratedValue

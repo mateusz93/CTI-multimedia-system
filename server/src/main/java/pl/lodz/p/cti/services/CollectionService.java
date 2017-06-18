@@ -16,7 +16,19 @@ public class CollectionService {
         this.collectionDAO = collectionDAO;
     }
 
-    public List<CollectionModel> findByCollectionId(Long collectionId) {
-        return collectionDAO.findByCollectionId(collectionId);
+    public CollectionModel findOne(Long collectionId) {
+        return collectionDAO.findOne(collectionId);
+    }
+
+    public List<CollectionModel> findAll() {
+        return collectionDAO.findAll();
+    }
+
+    public CollectionModel save(CollectionModel collectionModel) {
+        return collectionDAO.save(collectionModel);
+    }
+
+    public void delete(Long collectionId) {
+        collectionDAO.delete(collectionId);
     }
 }

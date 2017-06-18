@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import pl.lodz.p.cti.dao.PresentationDAO;
 import pl.lodz.p.cti.models.PresentationModel;
 
+import java.util.List;
+
 @Service
 public class PresentationService {
     private PresentationDAO presentationDAO;
@@ -16,5 +18,9 @@ public class PresentationService {
 
     public PresentationModel findByTvId(Long id) {
         return presentationDAO.findByTvId(id);
+    }
+
+    public List<PresentationModel> findAll() {
+        return presentationDAO.findAll();
     }
 }

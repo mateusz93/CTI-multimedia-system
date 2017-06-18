@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -17,10 +18,22 @@ public class ObjectModel {
 
     @NotNull
     @Column(unique=true)
-    private String objectName;
+    private String name;
 
     @NotNull
-    private String extension;
+    private String contentType;
+
+    @Lob
+    @Column(name = "object", length = Integer.MAX_VALUE)
+    private byte[] image;
+
+    public ObjectModel(){}
+
+    public ObjectModel(String name, String contentType, byte[] image) {
+        this.name = name;
+        this.contentType = contentType;
+        this.image = image;
+    }
 
     public Long getId() {
         return Id;
@@ -30,19 +43,27 @@ public class ObjectModel {
         Id = id;
     }
 
-    public String getObjectName() {
-        return objectName;
+    public String getName() {
+        return name;
     }
 
-    public void setObjectName(String objectName) {
-        this.objectName = objectName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getExtension() {
-        return extension;
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setExtension(String extension) {
-        this.extension = extension;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }

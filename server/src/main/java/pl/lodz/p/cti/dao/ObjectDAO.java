@@ -6,4 +6,5 @@ import pl.lodz.p.cti.models.ObjectModel;
 
 @Transactional
 public interface ObjectDAO extends JpaRepository<ObjectModel, Long> {
+    ObjectModel findByName(String name);
 }

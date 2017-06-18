@@ -1,57 +1,53 @@
 package pl.lodz.p.cti.models;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Entity
 @Table(name="collections")
-public class CollectionModel implements Comparable<CollectionModel>{
+public class CollectionModel{
 
     @Id
     @GeneratedValue
     private Long id;
 
     @NotNull
-    private Long collectionId;
+    @Column(unique = true)
+    private String name;
 
-    @NotNull
-    private Long orderNumber;
+    @OneToMany(mappedBy = "collection", cascade={CascadeType.ALL}, orphanRemoval = false)
+    private Set<CollectionObjectModel> collectionObjects;
 
-    @OneToOne
-    @JoinColumn(name = "objectId")
-    private ObjectModel objectModel;
-
-    public Long getCollectionId() {
-        return collectionId;
+    public Set<CollectionObjectModel> getCollectionObjects() {
+        return collectionObjects;
     }
 
-    public void setCollectionId(Long collectionId) {
-        this.collectionId = collectionId;
+    public CollectionModel(){}
+
+    public CollectionModel(String name) {
+        this.name = name;
     }
 
-    public Long getOrderNumber() {
-        return orderNumber;
+    public Long getId() {
+        return id;
     }
 
-    public void setOrderNumber(Long orderNumber) {
-        this.orderNumber = orderNumber;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public ObjectModel getObjectModel() {
-        return objectModel;
+    public String getName() {
+        return name;
     }
 
-    public void setObjectModel(ObjectModel objectModel) {
-        this.objectModel = objectModel;
-    }
-
-    @Override
-    public int compareTo(CollectionModel o) {
-        return (int)(orderNumber-o.getOrderNumber());
+    public void setName(String name) {
+        this.name = name;
     }
 }

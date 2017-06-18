@@ -1,12 +1,22 @@
 To do:
-- Podpięcie websocketów
+- Widok dodawania/usuwania prezentacji
+- Logika dodawania/usuwania prezentacji
+- Widok prezentacji do lekkiego zrefactorowania, żeby pokazywał obiekty per prezentacja per telewizor
+(na razie przekopiowany widok 1 do 1 z obiektów)
 - Przekazywanie sobie po websockecie wszelkich aktualizacji związanych z harmonogramem.
-- Endpoint do dodawania zdjęcia / video.
-- Widok do dodawania zdjęcia / video.
-- Endpoint do dodawania/usuwania prezentacji (możliwość wyboru dowolnej ilości obrazów/filmów w określonej kolejności)
-- Widok do dodawania prezentacji
+- Spring security dla stron administracyjnych
 
 Done:
 - Modele bazy danych (początkowy koncepcyjny, pewnie jeszcze do refactoru będzie)
 - Endpoint index - dla podłączania się telewizorów
 - Endpoint z PathVariable po którym będziemy identyfikować telewizor - na podstawie telewizora będziemy z bazy wyciągać aktualną prezentację z bazy danych i ją prezentować.
+- Podpięcie websocketów
+- Endpoint do dodawania zdjęcia / video.
+- Widok do dodawania zdjęcia / video.
+- Endpoint do dodawania/usuwania prezentacji (możliwość wyboru dowolnej ilości obrazów/filmów w określonej kolejności)
+- Widok do dodawania prezentacji
+- Logika dodawania/usuwania obiektów
+- Logika dodawania/usuwania kolekcji
+
+Link do szablonu bootstrapa użytego w multimediach
+//https://bootsnipp.com/snippets/3XrvX
