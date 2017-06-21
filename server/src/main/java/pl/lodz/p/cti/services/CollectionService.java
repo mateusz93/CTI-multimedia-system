@@ -31,4 +31,8 @@ public class CollectionService {
     public void delete(Long collectionId) {
         collectionDAO.delete(collectionId);
     }
+
+    public List<CollectionModel> findByIdNotIn(List<Long> collectionIdUsedList) {
+        return collectionDAO.findByIdNotIn(collectionIdUsedList);
+    }
 }

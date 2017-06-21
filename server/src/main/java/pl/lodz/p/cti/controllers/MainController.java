@@ -37,6 +37,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static pl.lodz.p.cti.utils.SessionIdentifierGenerator.nextSessionId;
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
@@ -94,8 +97,7 @@ public class MainController {
         if(presentationModel==null){
             model.addAttribute("presentation",null);
         } else {
-            CollectionModel collection = collectionService.findOne(presentationModel.getCollectionId());
-            model.addAttribute("presentation",collection);
+            model.addAttribute("presentation",presentationModel.getCollection());
         }
         return "presentation";
     }
@@ -109,16 +111,26 @@ public class MainController {
 
     @RequestMapping(value={"/presentations"},method = RequestMethod.GET)
     public String presentationsGET(Model model) throws ValidationException {
-        /*TODO*/
-        model.addAttribute("objects",objectService.findAll());
-        model.addAttribute("presentations",presentationService.findAll());
+        Map<TvModel, PresentationModel> presentations = new TreeMap<>();
+        List<TvModel> tvs = tvService.findAll();
+        List<PresentationModel> presentationsList = presentationService.findAll();
+        for(TvModel tv : tvs){
+            presentations.put(tv,null);
+        }
+        for(PresentationModel presentation : presentationsList){
+            presentations.put(presentation.getTv(),presentation);
+        }
+        model.addAttribute("presentations",presentations);
         return "presentations";
     }
 
 
     @RequestMapping(value={"/modifyObject"},method = RequestMethod.GET)
     public String modifyObjectGET(Model model) throws ValidationException {
-        model.addAttribute("objects",objectService.findAll());
+        List<CollectionObjectModel> collectionObjectModelList = collectionObjectService.findAll();
+        List<Long> objectIdUsedList = collectionObjectModelList.stream().map(collectionObjectModel -> collectionObjectModel.getObjectModel().getId()).collect(Collectors.toList());
+        List<ObjectModel> objectIdNotUsedList = objectService.findByIdNotIn(objectIdUsedList);
+        model.addAttribute("objects",objectIdNotUsedList);
         return "modifyObject";
     }
 
@@ -143,14 +155,20 @@ public class MainController {
         } else {
             throw new MissingNecessaryObjectException();
         }
-        model.addAttribute("objects",objectService.findAll());
+        List<CollectionObjectModel> collectionObjectModelList = collectionObjectService.findAll();
+        List<Long> objectIdUsedList = collectionObjectModelList.stream().map(collectionObjectModel -> collectionObjectModel.getObjectModel().getId()).collect(Collectors.toList());
+        List<ObjectModel> objectIdNotUsedList = objectService.findByIdNotIn(objectIdUsedList);
+        model.addAttribute("objects",objectIdNotUsedList);
         return "modifyObject";
     }
 
     @RequestMapping(value={"/removeObject"},method = RequestMethod.POST)
     public String removeObjectPOST(Model model, Long objectId) throws ValidationException {
         objectService.delete(objectId);
-        model.addAttribute("objects",objectService.findAll());
+        List<CollectionObjectModel> collectionObjectModelList = collectionObjectService.findAll();
+        List<Long> objectIdUsedList = collectionObjectModelList.stream().map(collectionObjectModel -> collectionObjectModel.getObjectModel().getId()).collect(Collectors.toList());
+        List<ObjectModel> objectIdNotUsedList = objectService.findByIdNotIn(objectIdUsedList);
+        model.addAttribute("objects",objectIdNotUsedList);
         model.addAttribute("green",generateStatement(Statements.CHOSEN_OBJECT_REMOVED));
         return "modifyObject";
     }
@@ -165,30 +183,28 @@ public class MainController {
 
     @RequestMapping(value={"/modifyPresentation"},method = RequestMethod.GET)
     public String modifyPresentationGET(Model model) throws ValidationException {
-        model.addAttribute("presentations",presentationService.findAll());
+        model.addAttribute("collections",collectionService.findAll());
+        model.addAttribute("tvs",tvService.findAll());
         return "modifyPresentation";
     }
 
-    @RequestMapping(value={"/addPresentation"},method = RequestMethod.POST)
-    public String addPresentationPOST(Model model) throws ValidationException {
-        /*TODO*/
-        model.addAttribute("presentations",presentationService.findAll());
+    @RequestMapping(value={"/changePresentation"},method = RequestMethod.POST)
+    public String changePresentationPOST(Model model, Long tvId, Long collectionId) throws ValidationException {
+        presentationService.deleteByTvId(tvId);
+        presentationService.save(new PresentationModel(tvService.findOne(tvId),collectionService.findOne(collectionId)));
+        model.addAttribute("collections",collectionService.findAll());
+        model.addAttribute("tvs",tvService.findAll());
         model.addAttribute("green",generateStatement(Statements.SAVE_PRESENTATION_WITH_GIVEN_NAME_SUCCESS));
-        return "modifyPresentation";
-    }
-
-    @RequestMapping(value={"/removePresentation"},method = RequestMethod.POST)
-    public String removePresentationPOST(Model model) throws ValidationException {
-        /*TODO*/
-        model.addAttribute("presentations",presentationService.findAll());
-        model.addAttribute("green",generateStatement(Statements.CHOSEN_PRESENTATION_REMOVED));
         return "modifyPresentation";
     }
 
     @RequestMapping(value={"/modifyCollection"},method = RequestMethod.GET)
     public String modifyCollectionGET(Model model) throws ValidationException {
+        List<PresentationModel> presentationModelList = presentationService.findAll();
+        List<Long> collectionIdUsedList = presentationModelList.stream().map(presentationModel -> presentationModel.getCollection().getId()).collect(Collectors.toList());
+        List<CollectionModel> collectionIdNotUsedList = collectionService.findByIdNotIn(collectionIdUsedList);
+        model.addAttribute("collections",collectionIdNotUsedList);
         model.addAttribute("objects",objectService.findAll());
-        model.addAttribute("collections",collectionService.findAll());
         model.addAttribute("collectionWrapper",new CollectionWrapper());
         return "modifyCollection";
     }
@@ -204,7 +220,12 @@ public class MainController {
             i++;
         }
         collectionObjectService.save(collectionObjectModelList);
-        model.addAttribute("collections",collectionService.findAll());
+        List<PresentationModel> presentationModelList = presentationService.findAll();
+        List<Long> collectionIdUsedList = presentationModelList.stream().map(presentationModel -> presentationModel.getCollection().getId()).collect(Collectors.toList());
+        List<CollectionModel> collectionIdNotUsedList = collectionService.findByIdNotIn(collectionIdUsedList);
+        model.addAttribute("collections",collectionIdNotUsedList);
+        model.addAttribute("objects",objectService.findAll());
+        model.addAttribute("collectionWrapper",new CollectionWrapper());
         model.addAttribute("green",generateStatement(Statements.SAVE_COLLECTION_WITH_GIVEN_NAME_SUCCESS,name));
         return "modifyCollection";
     }
@@ -212,7 +233,12 @@ public class MainController {
     @RequestMapping(value={"/removeCollection"},method = RequestMethod.POST)
     public String removeCollectionPOST(Model model,Long collectionId) throws ValidationException {
         collectionService.delete(collectionId);
-        model.addAttribute("collections",collectionService.findAll());
+        List<PresentationModel> presentationModelList = presentationService.findAll();
+        List<Long> collectionIdUsedList = presentationModelList.stream().map(presentationModel -> presentationModel.getCollection().getId()).collect(Collectors.toList());
+        List<CollectionModel> collectionIdNotUsedList = collectionService.findByIdNotIn(collectionIdUsedList);
+        model.addAttribute("collections",collectionIdNotUsedList);
+        model.addAttribute("objects",objectService.findAll());
+        model.addAttribute("collectionWrapper",new CollectionWrapper());
         model.addAttribute("green",generateStatement(Statements.CHOSEN_COLLECTION_REMOVED));
         return "modifyCollection";
     }

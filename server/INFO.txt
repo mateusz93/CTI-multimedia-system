@@ -1,8 +1,5 @@
 To do:
-- Widok dodawania/usuwania prezentacji
-- Logika dodawania/usuwania prezentacji
-- Widok prezentacji do lekkiego zrefactorowania, żeby pokazywał obiekty per prezentacja per telewizor
-(na razie przekopiowany widok 1 do 1 z obiektów)
+- Logika z harmonogramem
 - Przekazywanie sobie po websockecie wszelkich aktualizacji związanych z harmonogramem.
 - Spring security dla stron administracyjnych
 
@@ -17,6 +14,10 @@ Done:
 - Widok do dodawania prezentacji
 - Logika dodawania/usuwania obiektów
 - Logika dodawania/usuwania kolekcji
+- Widok modyfikowania prezentacji
+- Logika modyfikowania prezentacji
+- Widok prezentacji do lekkiego zrefactorowania, żeby pokazywał obiekty per prezentacja per telewizor
+(na razie przekopiowany widok 1 do 1 z obiektów)
 
 Link do szablonu bootstrapa użytego w multimediach
 //https://bootsnipp.com/snippets/3XrvX

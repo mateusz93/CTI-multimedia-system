@@ -234,7 +234,7 @@
                 <li><a href="./presentations">Prezentacje</a></li>
                 <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
                 <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
-                <li><a href="./modifyPresentation">Dodaj/usuń prezentację</a></li>
+                <li><a href="./modifyPresentation">Zmień prezentację</a></li>
             </ul>
         </div>
     </div>
@@ -272,11 +272,12 @@
         <div class="row">
             <div class="col-xs-6 col-xs-offset-3">
                 <div class="row">
-                    <div class="col-xs-6"><label for="collectionId">Kolekcja do usunięcia: </label></div>
+                    <div class="col-xs-6"><label for="collectionId">Usuń kolekcję*: </label></div>
                     <div class="col-xs-6">
                         <select name="collectionId" id="collectionId">
                             <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}"></option>
-                        </select>
+                        </select><br/>
+                        * - na liście widoczne są tylko kolekcje niewykorzystywane w żadnej prezentacji!
                     </div>
                 </div>
                 <div class="row">

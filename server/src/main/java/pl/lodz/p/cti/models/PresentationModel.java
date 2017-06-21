@@ -1,9 +1,11 @@
 package pl.lodz.p.cti.models;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -16,25 +18,34 @@ public class PresentationModel {
     private Long id;
 
     @NotNull
-    @Column(unique = true)
-    private Long tvId;
+    @OneToOne
+    private TvModel tv;
 
     @NotNull
-    private Long collectionId;
+    @ManyToOne
+    @JoinColumn(name = "collection_id")
+    private CollectionModel collection;
 
-    public Long getTvId() {
-        return tvId;
+    public PresentationModel(){}
+
+    public PresentationModel(TvModel tv, CollectionModel collection) {
+        this.tv = tv;
+        this.collection = collection;
     }
 
-    public void setTvId(Long tvId) {
-        this.tvId = tvId;
+    public TvModel getTv() {
+        return tv;
     }
 
-    public Long getCollectionId() {
-        return collectionId;
+    public void setTv(TvModel tv) {
+        this.tv = tv;
     }
 
-    public void setCollectionId(Long collectionId) {
-        this.collectionId = collectionId;
+    public CollectionModel getCollection() {
+        return collection;
+    }
+
+    public void setCollection(CollectionModel collection) {
+        this.collection = collection;
     }
 }

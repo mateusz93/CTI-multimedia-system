@@ -1,6 +1,5 @@
 package pl.lodz.p.cti.models;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -18,14 +17,15 @@ public class CollectionObjectModel{
     private Long id;
 
     @NotNull
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "collection_id")
     private CollectionModel collection;
 
     @NotNull
     private Long orderNumber;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "objectId")
+    @ManyToOne////////////////////////*(cascade = CascadeType.REMOVE)*/
+    @JoinColumn(name = "object_id")
     private ObjectModel objectModel;
 
     public CollectionObjectModel(){}

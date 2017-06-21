@@ -27,4 +27,8 @@ public class CollectionObjectService {
     public void delete(List<CollectionObjectModel> collectionObjectModelList) {
         collectionObjectDAO.delete(collectionObjectModelList);
     }
+
+    public List<CollectionObjectModel> findAll() {
+        return collectionObjectDAO.findAll();
+    }
 }

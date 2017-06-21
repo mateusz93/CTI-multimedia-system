@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name="collections")
@@ -22,10 +22,10 @@ public class CollectionModel{
     @Column(unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "collection", cascade={CascadeType.ALL}, orphanRemoval = false)
-    private Set<CollectionObjectModel> collectionObjects;
+    @OneToMany(cascade={CascadeType.ALL}, mappedBy = "collection", orphanRemoval = true)
+    private List<CollectionObjectModel> collectionObjects;
 
-    public Set<CollectionObjectModel> getCollectionObjects() {
+    public List<CollectionObjectModel> getCollectionObjects() {
         return collectionObjects;
     }
 

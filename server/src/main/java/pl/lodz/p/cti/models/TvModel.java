@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name="tvs")
-public class TvModel {
+public class TvModel implements Comparable<TvModel> {
 
     public static final String PROPERTY_HASH = "hash";
     public static final String PROPERTY_IP = "ip";
@@ -68,5 +68,10 @@ public class TvModel {
 
     public void setHash(String hash) {
         this.hash = hash;
+    }
+
+    @Override
+    public int compareTo(TvModel o) {
+        return (int)(id-o.getId());
     }
 }

@@ -23,4 +23,12 @@ public class PresentationService {
     public List<PresentationModel> findAll() {
         return presentationDAO.findAll();
     }
+
+    public List<PresentationModel> deleteByTvId(Long tvId) {
+        return presentationDAO.deleteByTvId(tvId);
+    }
+
+    public PresentationModel save(PresentationModel presentationModel) {
+        return presentationDAO.save(presentationModel);
+    }
 }

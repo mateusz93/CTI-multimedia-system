@@ -35,4 +35,8 @@ public class ObjectService {
     public void delete(Long objectId) {
         objectDAO.delete(objectId);
     }
+
+    public List<ObjectModel> findByIdNotIn(List<Long> objectIdUsedList) {
+        return objectDAO.findByIdNotIn(objectIdUsedList);
+    }
 }

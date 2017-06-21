@@ -205,102 +205,25 @@
                         <li><a href="./presentations">Prezentacje</a></li>
                         <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
                         <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
-                        <li><a href="./modifyPresentation">Dodaj/usuń prezentację</a></li>
+                        <li><a href="./modifyPresentation">Zmień prezentację</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
         <span class="text-align:center">Lista dodanych multimediów</span>
         <div class="container" style="padding-top: 120px">
-            <div class="row portfolio">
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?1" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs btn-lg pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
+            <div class="row portfolio" th:each="presentation : ${presentations}">
+                    <div th:text="|Prezentacja wyświetlana na telewizorze ${presentation.key.name}|"/>
+                    <div th:if="${presentation.value!=null}">
+                        <div class="col-sm-6 col-md-3" th:each="collectionObject,iter : ${presentation.value.collection.collectionObjects}">
+                                <div class="thumbnail">
+                                    <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" data-toggle="modal" data-target="#myModal"/>
+                                </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?2" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart"></i><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
-                        </div>
+                    <div th:if="${presentation.value==null}">
+                        Brak!
                     </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?3" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?4" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart-o"></i><i class="fa fa-heart-o"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?5" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?6" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart"></i><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?7" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-sm-6 col-md-3">
-                    <div class="thumbnail">
-                        <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?8" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
-                        <div class="caption">
-                            <p class="btn btn-default btn-xs pull-right" rel="tooltip"><i class="fa fa-heart"></i><i
-                                    class="fa fa-heart"></i><i class="fa fa-heart-o"></i><i class="fa fa-heart-o"></i><i
-                                    class="fa fa-heart-o"></i></p>
-                            <div class="clearfix"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <!-- Modal -->
             <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -317,6 +240,5 @@
                 </div>
             </div>
         </div>
-        <span class="text-align:center">Lista dodanych prezentacji</span>
     </body>
 </html>
