@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.lodz.p.cti.dao.PresentationDAO;
 import pl.lodz.p.cti.models.PresentationModel;
 
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -30,5 +31,13 @@ public class PresentationService {
 
     public PresentationModel save(PresentationModel presentationModel) {
         return presentationDAO.save(presentationModel);
+    }
+
+    public void delete(Long presentationId) {
+        presentationDAO.delete(presentationId);
+    }
+
+    public PresentationModel findByTvIdAndStartTime(Long tvId, LocalTime startTime) {
+        return presentationDAO.findByTvIdAndStartTime(tvId,startTime);
     }
 }

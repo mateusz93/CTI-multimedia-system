@@ -31,14 +31,15 @@ import pl.lodz.p.cti.services.PresentationService;
 import pl.lodz.p.cti.services.TvService;
 import pl.lodz.p.cti.utils.CollectionWrapper;
 import pl.lodz.p.cti.utils.Statements;
+import pl.lodz.p.cti.utils.StringToLocalTimeConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static pl.lodz.p.cti.utils.SessionIdentifierGenerator.nextSessionId;
@@ -111,15 +112,8 @@ public class MainController {
 
     @RequestMapping(value={"/presentations"},method = RequestMethod.GET)
     public String presentationsGET(Model model) throws ValidationException {
-        Map<TvModel, PresentationModel> presentations = new TreeMap<>();
-        List<TvModel> tvs = tvService.findAll();
-        List<PresentationModel> presentationsList = presentationService.findAll();
-        for(TvModel tv : tvs){
-            presentations.put(tv,null);
-        }
-        for(PresentationModel presentation : presentationsList){
-            presentations.put(presentation.getTv(),presentation);
-        }
+        List<PresentationModel> presentations = presentationService.findAll();
+        Collections.sort(presentations);
         model.addAttribute("presentations",presentations);
         return "presentations";
     }
@@ -140,7 +134,7 @@ public class MainController {
             try {
                 byte[] bytes = image.getBytes();
                 String contentType = image.getContentType();
-                if(!"image/jpeg".equals(contentType)&&!"image/jpg".equals(contentType)&&!"image/png".equals(contentType)&&!"image/gif".equals(contentType)){
+                if(!"video/mp4".equals(contentType)&&!"image/jpeg".equals(contentType)&&!"image/jpg".equals(contentType)&&!"image/png".equals(contentType)&&!"image/gif".equals(contentType)){
                     throw new UnsupportedExtensionException(contentType);
                 }
                 if(objectService.findByName(name)!=null){
@@ -183,15 +177,32 @@ public class MainController {
 
     @RequestMapping(value={"/modifyPresentation"},method = RequestMethod.GET)
     public String modifyPresentationGET(Model model) throws ValidationException {
-        model.addAttribute("collections",collectionService.findAll());
-        model.addAttribute("tvs",tvService.findAll());
+        model.addAttribute("presentations",presentationService.findAll());
+        model.addAttribute("collections", collectionService.findAll());
+        model.addAttribute("tvs", tvService.findAll());
         return "modifyPresentation";
     }
 
-    @RequestMapping(value={"/changePresentation"},method = RequestMethod.POST)
-    public String changePresentationPOST(Model model, Long tvId, Long collectionId) throws ValidationException {
-        presentationService.deleteByTvId(tvId);
-        presentationService.save(new PresentationModel(tvService.findOne(tvId),collectionService.findOne(collectionId)));
+    @RequestMapping(value={"/addPresentation"},method = RequestMethod.POST)
+    public String addPresentationPOST(Model model, Long tvId, Long collectionId, String time) throws ValidationException {
+        LocalTime startTime = new StringToLocalTimeConverter(time).getLocalTime();
+        PresentationModel presentationModel = presentationService.findByTvIdAndStartTime(tvId,startTime);
+        if(presentationModel!=null){
+            model.addAttribute("red",generateStatement(Statements.PRESENTATION_WITH_GIVEN_DATA_ALREADY_EXISTS));
+        } else {
+            presentationService.save(new PresentationModel(tvService.findOne(tvId), collectionService.findOne(collectionId), startTime));
+            model.addAttribute("green", generateStatement(Statements.SAVE_PRESENTATION_WITH_GIVEN_NAME_SUCCESS));
+        }
+        model.addAttribute("presentations",presentationService.findAll());
+        model.addAttribute("collections", collectionService.findAll());
+        model.addAttribute("tvs", tvService.findAll());
+        return "modifyPresentation";
+    }
+
+    @RequestMapping(value={"/removePresentation"},method = RequestMethod.POST)
+    public String deletePresentationPOST(Model model, Long presentationId) throws ValidationException {
+        presentationService.delete(presentationId);
+        model.addAttribute("presentations",presentationService.findAll());
         model.addAttribute("collections",collectionService.findAll());
         model.addAttribute("tvs",tvService.findAll());
         model.addAttribute("green",generateStatement(Statements.SAVE_PRESENTATION_WITH_GIVEN_NAME_SUCCESS));
@@ -257,88 +268,4 @@ public class MainController {
             return new ScheduleMessage(Boolean.TRUE);
         }
     }
-/*
-
-    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
-    public String removeUserPOST(Model model, long userId) {
-        try{
-            userService.delete(userId);
-            model.addAttribute("success","Udało się usunąć użytkownika!");
-        } catch (UnsupportedOperationException exc){
-            model.addAttribute("error",exc.getMessage());
-        }
-        model.addAttribute("users",userService.listUser());
-        return "removeUser";
-    }
-
-    @RequestMapping(value={"/addDeposit"},method = RequestMethod.GET)
-    public String addDepositGET(Model model) {
-        model.addAttribute("users",userService.listUser());
-        return "addDeposit";
-    }
-
-    @RequestMapping(value={"/addDeposit"},method = RequestMethod.POST)
-    public String addDepositPOST(Model model, int userId, Double balance) {
-        UserModel user = userService.findOne(userId);
-        if(balance==null){
-            model.addAttribute("error", "Nie podano wysokości wpłaty!");
-        } else {
-            user.setBalance(user.getBalance() + balance);
-            try {
-                userService.update(user);
-                model.addAttribute("success","Udało się dokonać wpłaty!");
-            } catch (UnsupportedOperationException exc) {
-                model.addAttribute("error", exc.getMessage());
-            }
-        }
-        model.addAttribute("users",userService.listUser());
-        return "addDeposit";
-    }
-
-    @RequestMapping(value = "/makeWithdraw", method = RequestMethod.GET)
-    public String makeWithdrawGET(Model model) {
-        model.addAttribute("users",userService.listUser());
-        return "makeWithdraw";
-    }
-
-    @RequestMapping(value = "/makeWithdraw", method = RequestMethod.POST)
-    public String makeWithdrawPOST(Model model, int userId, Double balance) {
-        UserModel user = userService.findOne(userId);
-        if(balance==null) {
-            model.addAttribute("error", "Nie podano wysokości wypłaty!");
-        } else if(user.getBalance()-balance<0) {
-            model.addAttribute("error","Błąd! Kwota po wypłacnie byłaby mniejsza od 0!");
-        } else{
-            user.setBalance(user.getBalance() - balance);
-            try {
-                userService.update(user);
-                model.addAttribute("success","Udało się dokonać wypłaty");
-            }catch(UnsupportedOperationException exc){
-                model.addAttribute("error",exc.getMessage());
-            }
-        }
-        model.addAttribute("users",userService.listUser());
-        return "makeWithdraw";
-    }
-
-    @RequestMapping(value = "/makePayment", method = RequestMethod.GET)
-    public String makePaymentGET(Model model) {
-        model.addAttribute("users",userService.listUser());
-        return "makePayment";
-    }
-
-    @RequestMapping(value={"/makePayment"},method = RequestMethod.POST)
-    public String makePaymentPOST(Model model, int userSourceId, int userDestinationId, double balance) {
-        UserModel sourceUser = userService.findOne(userSourceId);
-        UserModel destinationUser = userService.findOne(userDestinationId);
-        try{
-            userService.makePayment(sourceUser,destinationUser,balance);
-            model.addAttribute("success","Przelew został zrealizowany!");
-        } catch (UnsupportedOperationException exc) {
-            model.addAttribute("error",exc.getMessage());
-        }
-        model.addAttribute("users",userService.listUser());
-        return "makePayment";
-    }*/
-
 }

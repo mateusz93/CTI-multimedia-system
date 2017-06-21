@@ -254,7 +254,7 @@
                 </div>
                 <div class="col-sm-6 col-md-3" th:each="object : ${objects}">
                     <div class="thumbnail">
-                        <img class="img-responsive" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" data-toggle="modal" data-target="#myModal"/>
+                        <img class="img-responsive" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" style="height:175px;width:262px" data-toggle="modal" data-target="#myModal"/>
                     </div>
                 </div>
             </div>

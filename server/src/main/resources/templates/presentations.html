@@ -213,16 +213,11 @@
         <span class="text-align:center">Lista dodanych multimediów</span>
         <div class="container" style="padding-top: 120px">
             <div class="row portfolio" th:each="presentation : ${presentations}">
-                    <div th:text="|Prezentacja wyświetlana na telewizorze ${presentation.key.name}|"/>
-                    <div th:if="${presentation.value!=null}">
-                        <div class="col-sm-6 col-md-3" th:each="collectionObject,iter : ${presentation.value.collection.collectionObjects}">
-                                <div class="thumbnail">
-                                    <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" data-toggle="modal" data-target="#myModal"/>
-                                </div>
-                        </div>
-                    </div>
-                    <div th:if="${presentation.value==null}">
-                        Brak!
+                    <div th:text="|Prezentacja wyświetlana na telewizorze ${presentation.tv.name} od godz: ${presentation.startTime}|"/>
+                    <div class="col-sm-6 col-md-3" th:each="collectionObject : ${presentation.collection.collectionObjects}">
+                            <div class="thumbnail">
+                                <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" style="height:175px;width:262px" data-toggle="modal" data-target="#myModal"/>
+                            </div>
                     </div>
             </div>
             <!-- Modal -->

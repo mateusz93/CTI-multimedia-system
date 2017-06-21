@@ -24,7 +24,7 @@ public class CollectionObjectModel{
     @NotNull
     private Long orderNumber;
 
-    @ManyToOne////////////////////////*(cascade = CascadeType.REMOVE)*/
+    @ManyToOne
     @JoinColumn(name = "object_id")
     private ObjectModel objectModel;
 
