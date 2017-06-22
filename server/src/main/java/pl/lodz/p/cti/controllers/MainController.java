@@ -1,8 +1,6 @@
 package pl.lodz.p.cti.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -16,8 +14,6 @@ import pl.lodz.p.cti.exceptions.TvModelDoesntExistsException;
 import pl.lodz.p.cti.exceptions.UnexpectedErrorException;
 import pl.lodz.p.cti.exceptions.UnsupportedExtensionException;
 import pl.lodz.p.cti.exceptions.ValidationException;
-import pl.lodz.p.cti.messages.RegisterMessage;
-import pl.lodz.p.cti.messages.ScheduleMessage;
 import pl.lodz.p.cti.models.CollectionModel;
 import pl.lodz.p.cti.models.CollectionObjectModel;
 import pl.lodz.p.cti.models.ObjectModel;
@@ -42,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static pl.lodz.p.cti.utils.ActualPresentationFinder.findActualPresentation;
 import static pl.lodz.p.cti.utils.SessionIdentifierGenerator.nextSessionId;
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
@@ -93,13 +90,18 @@ public class MainController {
         if(tvModel == null){
             throw new TvModelDoesntExistsException(TvModel.PROPERTY_HASH, hash);
         }
-        model.addAttribute("hash",hash);
-        PresentationModel presentationModel = presentationService.findByTvId(tvModel.getId());
-        if(presentationModel==null){
-            model.addAttribute("presentation",null);
+        PresentationModel actualPresentation = findActualPresentation(presentationService.findByTvId(tvModel.getId()));
+        if(actualPresentation==null) {
+            model.addAttribute("presentation", null);
         } else {
-            model.addAttribute("presentation",presentationModel.getCollection());
+            model.addAttribute("presentation", actualPresentation.getCollection().getCollectionObjects()
+                    .stream().map(collectionObjectModel -> collectionObjectModel.getObjectModel().getId())
+                    .collect(Collectors.toList()));
+            model.addAttribute("objectsTypes", actualPresentation.getCollection().getCollectionObjects()
+                    .stream().map(collectionObjectModel -> collectionObjectModel.getObjectModel().getContentType())
+                    .collect(Collectors.toList()));
         }
+        model.addAttribute("tvId",tvModel.getId());
         return "presentation";
     }
 
@@ -254,18 +256,18 @@ public class MainController {
         return "modifyCollection";
     }
 
-    @MessageMapping("/register")
+/*    @MessageMapping("/register")
     @SendTo("/topic/schedule")
-    public ScheduleMessage registerWebsocketEndpoint(RegisterMessage message) throws Exception {
+    public ForceRefreshMessage registerWebsocketEndpoint(RegisterMessage message) throws Exception {
         TvModel tvModel = tvService.findByHash(message.getHash());
         if(tvModel==null){
             throw new TvModelDoesntExistsException(TvModel.PROPERTY_HASH,message.getHash());
         }
         PresentationModel presentationModel = presentationService.findByTvId(tvModel.getId());
         if(presentationModel==null){
-            return new ScheduleMessage(Boolean.FALSE);
+            return new ForceRefreshMessage(Boolean.FALSE);
         } else {
-            return new ScheduleMessage(Boolean.TRUE);
+            return new ForceRefreshMessage(Boolean.TRUE);
         }
-    }
+    }*/
 }

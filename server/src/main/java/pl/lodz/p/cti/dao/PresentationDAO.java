@@ -11,5 +11,5 @@ import java.util.List;
 public interface PresentationDAO extends JpaRepository<PresentationModel, Long> {
     PresentationModel findByTvIdAndStartTime(Long tvId, LocalTime startTime);
     List<PresentationModel> deleteByTvId(Long tvId);
-    PresentationModel findByTvId(Long id);
+    List<PresentationModel> findByTvId(Long id);
 }

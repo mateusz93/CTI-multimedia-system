@@ -1,6 +1,4 @@
 To do:
-- Przekazywanie sobie po websockecie wszelkich aktualizacji związanych z harmonogramem (czyli na akcjach create update
-delete spinamy wysyłanie po websockecie informacji o aktualizacji harmonogramu)
 - Spring security dla stron administracyjnych
 - Wygenerowanie dla każdego obrazka na obiektach i prezentacjach modala i podpięcie odpowiednich modali pod właściwe obrazki.
 - Wyświetlanie filmów w obiektach / prezentacjach (można rozpoznać po contentType) - wspierane contenttype'y w MainController:143
@@ -22,6 +20,8 @@ Done:
 (na razie przekopiowany widok 1 do 1 z obiektów)
 - Przeskalowanie wszystkich obiektów na obiektach/prezentacjach, żeby ładnie się wyświetlały na stronie
 - Logika z harmonogramem
+- Pobieranie aktualnej prezentacji z bazy.
+- Przekazywanie na front informacji o tym kiedy jest wymagany refresh
 
 Link do szablonu bootstrapa użytego w multimediach
 //https://bootsnipp.com/snippets/3XrvX

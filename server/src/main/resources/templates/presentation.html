@@ -55,30 +55,46 @@
     <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
     <script th:inline="javascript">
         var stompClient = null;
-        var hash = [[${hash}]];
+        var tvId = [[${tvId}]];
+        var presentation = [[${presentation}]];
+        var objectsTypes = [[${objectsTypes}]];
         function connect() {
             var socket = new SockJS('/cti-websocket');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
-              /*setConnected(true);*/
                 alert("Connected successfully!");
                 console.log('Connected: ' + frame);
-                stompClient.subscribe('/topic/schedule', function (schedule) {
-                    alert("Komunikat harmonogramu: Czy istnieje? "+JSON.parse(schedule.body).exists);
+                stompClient.subscribe('/topic/forceRefresh', function (forceRefresh) {
+                    alert(forceRefresh.body.tvId+ " " + tvId + " "+forceRefresh.body.tvId===tvId);
+                    if(forceRefresh.body.tvId===tvId){
+                        location.reload();
+                    }
                 });
-                firstMessage();
             });
         }
+
+        /*<![CDATA[*/
+        if(presentation!==null) {
+            var objects = [];
+            for(var i=0; i<presentation.length; i++)
+            {
+                if(objectsTypes[i].endsWith("mp4")){
+                    objects.push(new VideoGalleryObject(presentation[i]));
+                } else {
+                    objects.push(new ImageGalleryObject(presentation[i]));
+                }
+            }
+            setGalleryObjects(objects);
+        } else {
+            setDefaultGalleryObjects();
+        }
+        /*]]>*/
 
         function disconnect() {
             if (stompClient != null) {
                 stompClient.disconnect();
             }
             console.log("Disconnected!");
-        }
-
-        function firstMessage() {
-            stompClient.send("/app/register", {}, JSON.stringify({'hash': hash}));
         }
 
         connect();

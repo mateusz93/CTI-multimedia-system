@@ -17,7 +17,7 @@ public class PresentationService {
         this.presentationDAO = presentationDAO;
     }
 
-    public PresentationModel findByTvId(Long id) {
+    public List<PresentationModel> findByTvId(Long id) {
         return presentationDAO.findByTvId(id);
     }
 
