@@ -92,14 +92,10 @@ public class MainController {
         }
         PresentationModel actualPresentation = findActualPresentation(presentationService.findByTvId(tvModel.getId()));
         if(actualPresentation==null) {
-            model.addAttribute("presentation", null);
+            model.addAttribute("objects", null);
         } else {
-            model.addAttribute("presentation", actualPresentation.getCollection().getCollectionObjects()
-                    .stream().map(collectionObjectModel -> collectionObjectModel.getObjectModel().getId())
-                    .collect(Collectors.toList()));
-            model.addAttribute("objectsTypes", actualPresentation.getCollection().getCollectionObjects()
-                    .stream().map(collectionObjectModel -> collectionObjectModel.getObjectModel().getContentType())
-                    .collect(Collectors.toList()));
+            model.addAttribute("objects", actualPresentation.getCollection().getCollectionObjects()
+                    .stream().map(CollectionObjectModel::getObjectModel).collect(Collectors.toList()));
         }
         model.addAttribute("tvId",tvModel.getId());
         return "presentation";

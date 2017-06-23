@@ -1,7 +1,7 @@
 package pl.lodz.p.cti.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pl.lodz.p.cti.messages.ForceRefreshMessage;
@@ -16,9 +16,12 @@ public class CronScheduler {
 
     private PresentationService presentationService;
 
+    private SimpMessagingTemplate template;
+
     @Autowired
-    public CronScheduler(PresentationService presentationService){
+    public CronScheduler(PresentationService presentationService, SimpMessagingTemplate template){
         this.presentationService = presentationService;
+        this.template = template;
     }
 
     @Scheduled(cron="0 * * * * ?")
@@ -33,10 +36,9 @@ public class CronScheduler {
         }
     }
 
-    @SendTo("/topic/forceRefresh")
-    private ForceRefreshMessage forceRefresh(Long tvId) {
+    private void forceRefresh(Long tvId) {
         System.out.println("ForceRefresh!");
-        return new ForceRefreshMessage(tvId);
+        this.template.convertAndSend("/topic/forceRefresh", new ForceRefreshMessage(tvId));
     }
 
 

@@ -7,16 +7,23 @@ function GalleryException(msg)
     }
 }
 
+
+function hideEveryObject(objects) {
+        for(var i=0;i<objects.length;i++){
+            $("#object"+i).hide();
+        }
+}
+
 //Gallery
 function Gallery(elementID, objects, options)
 {
+    hideEveryObject(objects);
     var element = $('#' + elementID);
     var galleryObjects = objects || [];
     var currentObjectIndex = 0;
     var currentlyDisplayed = [];
     var galleryOptions = options || {};
     var bubblesContainer = $('<div class="gallery-bubbles-container"></div>');
-    //TODO: Preload all objects for faster response times
     var loadNextImage = function(){
         for (var i = 0; i < galleryObjects.length; i++)
         {
@@ -26,7 +33,7 @@ function Gallery(elementID, objects, options)
         }
         var obj = galleryObjects[currentObjectIndex];
         obj.addEventListener('stop', loadNextImage);
-        var layout = $(obj.getLayout());
+        var layout = $(obj.getLayout(currentObjectIndex));
         layout.hide();
         element.append(layout);
         layout.show('slide', {direction: 'right'}, 500, function(){
@@ -35,7 +42,6 @@ function Gallery(elementID, objects, options)
         while (currentlyDisplayed.length > 0)
         {
             currentlyDisplayed.pop().hide('slide', {direction: 'left'}, 500, function(){
-                $(this).remove();
             });
         }
         currentlyDisplayed.push(layout);
@@ -99,13 +105,13 @@ function Gallery(elementID, objects, options)
 }
 
 //GalleryObject
-function GalleryObject(url)
+function GalleryObject(id)
 {
     this.listeners = [];
-    this.url = url;
+    this.id = id;
 }
-GalleryObject.prototype.getLayout = function() {
-    throw new GalleryException('Method getLayout must be redefined in inheriting class!');
+GalleryObject.prototype.getLayout = function(i) {
+    return $("#object"+i);
 };
 GalleryObject.prototype.start = function() {
     throw new GalleryException('Method start must be redefined in inheriting class!');
@@ -135,16 +141,13 @@ GalleryObject.prototype.dispatchEvent = function(event, data) {
 };
 
 //ImageGalleryObject
-function ImageGalleryObject(url)
+function ImageGalleryObject(id)
 {
-    GalleryObject.call(this, url);
+    GalleryObject.call(this, id);
     this.timeout = -1;
 }
 ImageGalleryObject.prototype = Object.create(GalleryObject.prototype);
 ImageGalleryObject.prototype.constructor = ImageGalleryObject;
-ImageGalleryObject.prototype.getLayout = function() {
-    return '<div class="image-object" style="background-image:url(\'' + this.url + '\');"></div>';
-};
 ImageGalleryObject.prototype.start = function() {
     this.timeout = window.setTimeout((function(){ this.dispatchEvent('stop'); }).bind(this), 5000);
 };
@@ -153,16 +156,13 @@ ImageGalleryObject.prototype.stop = function() {
 };
 
 //VideoGalleryObject
-function VideoGalleryObject(url)
+function VideoGalleryObject(id)
 {
-    GalleryObject.call(this, url);
-    this.video = $('<video class="video-object"><source src="' + this.url + '" type="video/mp4">Your browser doesn\'t support HTML5 video tag.</video>');
+    GalleryObject.call(this, id);
+    this.video = $("#object"+id);
 }
 VideoGalleryObject.prototype = Object.create(GalleryObject.prototype);
 VideoGalleryObject.prototype.constructor = VideoGalleryObject;
-VideoGalleryObject.prototype.getLayout = function() {
-    return this.video;
-};
 VideoGalleryObject.prototype.start = function() {
     this.video.on('ended', this.dispatchEvent.bind(this, 'stop'));
     this.video.get(0).play();
@@ -173,15 +173,7 @@ VideoGalleryObject.prototype.stop = function() {
     this.video.get(0).currentTime = 0;
 };
 
-var gallery = new Gallery('gallery', [new ImageGalleryObject('../img/img_01.jpg'), new ImageGalleryObject('../img/img_02.jpg'), new ImageGalleryObject('../img/img_03.jpg'), new VideoGalleryObject('../img/vid_01.mp4'), new VideoGalleryObject('../img/vid_02.mp4')], {displayBubbles: true});
-gallery.start();
-
-window.setTimeout(function(){
-    gallery.setObjects([new ImageGalleryObject('../img/img_04.jpg'), new ImageGalleryObject('../img/img_02.jpg'), new ImageGalleryObject('../img/img_01.jpg'), new VideoGalleryObject('../img/vid_02.mp4'), new ImageGalleryObject('../img/img_03.jpg'), new VideoGalleryObject('../img/vid_01.mp4')]);
-}, 60000);
-
-//TODO:
-/**
- * Preloading obiektów aby uniknąć pustego ekranu podczas wczytywania
- * Postery dla video?
- */
+function setGalleryObjects(galleryObjects){
+    var gallery = new Gallery('gallery', galleryObjects, {displayBubbles: true});
+    gallery.start();
+}

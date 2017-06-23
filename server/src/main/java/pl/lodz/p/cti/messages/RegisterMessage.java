@@ -1,19 +1,19 @@
 package pl.lodz.p.cti.messages;
 
 public class RegisterMessage {
-    private String hash;
+    private Long tvId;
 
     public RegisterMessage() {}
 
-    public RegisterMessage(String hash) {
-        this.hash = hash;
+    public RegisterMessage(Long tvId) {
+        this.tvId = tvId;
     }
 
-    public String getHash() {
-        return hash;
+    public Long getTvId() {
+        return tvId;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
+    public void setTvId(Long tvId) {
+        this.tvId = tvId;
     }
 }
