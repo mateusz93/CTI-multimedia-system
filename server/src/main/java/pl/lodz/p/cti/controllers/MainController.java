@@ -172,7 +172,7 @@ public class MainController {
     @RequestMapping(value = {"/getObject"}, method = RequestMethod.GET)
     public void productImage(HttpServletRequest request, HttpServletResponse response, @RequestParam("id") Long id) throws IOException {
         ObjectModel pict = objectService.findOne(id);
-        response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
+        response.setContentType("video/mp4, image/jpeg, image/jpg, image/png, image/gif");
         response.getOutputStream().write(pict.getImage());
         response.getOutputStream().close();
     }

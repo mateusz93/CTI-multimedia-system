@@ -215,21 +215,29 @@
             <div class="row portfolio" th:each="presentation : ${presentations}">
                     <div th:text="|Prezentacja wyświetlana na telewizorze ${presentation.tv.name} od godz: ${presentation.startTime}|"/>
                     <div class="col-sm-6 col-md-3" th:each="collectionObject : ${presentation.collection.collectionObjects}">
-                            <div class="thumbnail">
-                                <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" style="height:175px;width:262px" data-toggle="modal" data-target="#myModal"/>
-                            </div>
+                        <div class="thumbnail" th:if="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
+                            <video autoplay="autoplay" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" style="width:100%;" data-toggle="modal" th:attr="data-target='#myModal'+${collectionObject.objectModel.id}" controls="controls" loop="loop"/>
+                        </div>
+                        <div class="thumbnail" th:unless="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
+                            <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" style="height:175px;width:262px" data-toggle="modal" th:attr="data-target='#myModal'+${collectionObject.objectModel.id}"/>
+                        </div>
                     </div>
             </div>
             <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                            <h4 class="modal-title" id="myModalLabel">Im the awesome cat!</h4>
-                        </div>
-                        <div class="modal-body">
-                            <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?42" alt="The awesome description"/>
+            <div class="row portfolio" th:each="presentation : ${presentations}">
+                <div class="modal fade" th:id="|myModal${collectionObject.objectModel.id}|" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" th:each="collectionObject : ${presentation.collection.collectionObjects}">
+                    <div class="modal-dialog" style="margin-top:160px">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel" th:text="${collectionObject.objectModel.name}"></h4>
+                            </div>
+                            <div class="modal-body" th:if="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
+                                <video style="width:100%" autoplay="autoplay" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" controls="controls" loop="loop" />
+                            </div>
+                            <div class="modal-body" th:unless="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
+                                <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}"/>
+                            </div>
                         </div>
                     </div>
                 </div>
