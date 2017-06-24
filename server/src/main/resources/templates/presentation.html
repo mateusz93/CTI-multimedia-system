@@ -25,7 +25,7 @@
   </head>
   <body>
 
-    <nav class="navbar navbar-inverse navbar-fixed-top gallery-navbar">
+    <nav class="navbar navbar-inverse navbar-fixed-top gallery-navbar" th:if="${displayHeader}">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -34,7 +34,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">TV in CTI - Concept Template</a>
+          <a class="navbar-brand" href="#" th:text="${headerText}"></a>
         </div>
       </div>
     </nav>
@@ -57,7 +57,7 @@
     <!-- jQuery UI -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <!-- Gallery script - Concept -->
-    <script src="../js/gallery.js"></script>
+    <script src="../js/gallery.js?"></script>
     <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
     <script th:inline="javascript">
@@ -78,20 +78,22 @@
             });
         }
 
-        /*<![CDATA[*/
         if(objects!==null) {
             var galleryObjects = [];
+        /*<![CDATA[*/
             for(var i=0; i<objects.length; i++)
+        /*]]>*/
             {
                 if(objects[i].contentType.endsWith("mp4")){
                     galleryObjects.push(new VideoGalleryObject(i));
                 } else {
-                    galleryObjects.push(new ImageGalleryObject(i));
+                	var object = new ImageGalleryObject(i);
+                	object.setDisplayTime(1000 * [[${displayTime}]]);
+                    galleryObjects.push(object);
                 }
             }
-            setGalleryObjects(galleryObjects);
+            setGalleryObjects(galleryObjects, [[${displayBubbles}]]);
         }
-        /*]]>*/
 
         window.onload = connect;
     </script>

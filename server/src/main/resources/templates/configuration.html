@@ -205,44 +205,58 @@
                         <li><a href="./presentations">Prezentacje</a></li>
                         <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
                         <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
-                        <li><a href="./modifyPresentation">Zmień prezentację</a></li>
+                        <li><a href="./modifyPresentation">Zmień prezentacje</a></li>
                         <li><a href="./configuration">Konfiguracja</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <span class="text-align:center">Lista dodanych multimediów</span>
-        <div class="container" style="padding-top: 120px">
-            <div class="row portfolio" th:each="presentation : ${presentations}">
-                    <div th:text="|Prezentacja wyświetlana na telewizorze ${presentation.tv.name} od godz: ${presentation.startTime}|"/>
-                    <div class="col-sm-6 col-md-3" th:each="collectionObject : ${presentation.collection.collectionObjects}">
-                        <div class="thumbnail" th:if="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
-                            <video autoplay="autoplay" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" style="width:100%;" data-toggle="modal" th:attr="data-target='#myModal'+${collectionObject.objectModel.id}" controls="controls" loop="loop"/>
-                        </div>
-                        <div class="thumbnail" th:unless="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
-                            <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" style="height:175px;width:262px" data-toggle="modal" th:attr="data-target='#myModal'+${collectionObject.objectModel.id}"/>
-                        </div>
-                    </div>
-            </div>
-            <!-- Modal -->
-            <div class="row portfolio" th:each="presentation : ${presentations}">
-                <div class="modal fade" th:id="|myModal${collectionObject.objectModel.id}|" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" th:each="collectionObject : ${presentation.collection.collectionObjects}">
-                    <div class="modal-dialog" style="margin-top:160px">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>
-                                <h4 class="modal-title" id="myModalLabel" th:text="${collectionObject.objectModel.name}"></h4>
-                            </div>
-                            <div class="modal-body" th:if="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
-                                <video style="width:100%" autoplay="autoplay" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}" controls="controls" loop="loop" />
-                            </div>
-                            <div class="modal-body" th:unless="${#strings.endsWith(collectionObject.objectModel.contentType,'mp4')}">
-                                <img class="img-responsive" th:src="@{/getObject(id=${collectionObject.objectModel.id})}" th:alt="${collectionObject.objectModel.name}"/>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="container">
+            <div id="inner_container" style="padding-top:80px;text-align:center;">
+                <form method="post" action="configuration">
+                	<div class="row">
+                		<div class="col-xs-3">
+                			<label for="cfg_displaytime">Czas pokazywania slajdów ze zdjęciami [sek]: </label>
+                		</div>
+                		<div class="col-xs-9">
+                			<input type="number" min="1" step="1" id="cfg_displaytime" name="displayTime" class="form-control" th:value="${displayTime}" />
+                		</div>
+                	</div>
+                	<div class="row">
+                		<div class="col-xs-3">
+                			<label for="cfg_displaybubbles">Pokazywanie informacji o ilości slajdów oraz aktualnie wyświetlanym w postaci kropek: </label>
+                		</div>
+                		<div class="col-xs-9">
+                			<select name="displayBubbles" id="cfg_displaybubbles" class="form-control">
+                				<option value="true" th:selected="${displayBubbles.equals(trueValue)}">Tak</option>
+                				<option value="false" th:selected="${!displayBubbles.equals(trueValue)}">Nie</option>
+                			</select>
+                		</div>
+                	</div>
+                	<div class="row">
+                		<div class="col-xs-3">
+                			<label for="cfg_displayheader">Pokazuj nagłówek strony: </label>
+                		</div>
+                		<div class="col-xs-9">
+                			<select name="displayHeader" id="cfg_displayheader" class="form-control">
+                				<option value="true" th:selected="${displayHeader.equals(trueValue)}">Tak</option>
+                				<option value="false" th:selected="${!displayHeader.equals(trueValue)}">Nie</option>
+                			</select>
+                		</div>
+                	</div>
+                	<div class="row">
+                		<div class="col-xs-3">
+                			<label for="cfg_headertext">Treść nagłówka strony: </label>
+                		</div>
+                		<div class="col-xs-9">
+                			<input type="text" id="cfg_headertext" name="headerText" class="form-control" th:value="${headerText}" />
+                		</div>
+                	</div>
+                    <input id="submit" name="submit" class="button" type="submit" value="Zapisz konfigurację"/>
+                </form>
             </div>
         </div>
+        <div style="color:green;text-align: center;font-size: 16pt;padding-bottom: 20px;"><span th:text="${green}"></span></div>
+        <div style="color:red;text-align: center;font-size: 16pt;;padding-bottom: 20px;"><span th:text="${red}"></span></div>
     </body>
 </html>

@@ -40,7 +40,7 @@ public class ObjectModel {
     }
 
     public void setId(Long id) {
-        id = id;
+        this.id = id;
     }
 
     public String getName() {

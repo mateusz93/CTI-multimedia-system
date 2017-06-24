@@ -145,11 +145,15 @@ function ImageGalleryObject(id)
 {
     GalleryObject.call(this, id);
     this.timeout = -1;
+    this.time = 5000;
 }
 ImageGalleryObject.prototype = Object.create(GalleryObject.prototype);
 ImageGalleryObject.prototype.constructor = ImageGalleryObject;
 ImageGalleryObject.prototype.start = function() {
-    this.timeout = window.setTimeout((function(){ this.dispatchEvent('stop'); }).bind(this), 5000);
+    this.timeout = window.setTimeout((function(){ this.dispatchEvent('stop'); }).bind(this), this.time);
+};
+ImageGalleryObject.prototype.setDisplayTime = function(time) {
+    this.time = time;
 };
 ImageGalleryObject.prototype.stop = function() {
     window.clearTimeout(this.timeout);
@@ -173,7 +177,7 @@ VideoGalleryObject.prototype.stop = function() {
     this.video.get(0).currentTime = 0;
 };
 
-function setGalleryObjects(galleryObjects){
-    var gallery = new Gallery('gallery', galleryObjects, {displayBubbles: true});
+function setGalleryObjects(galleryObjects, displayBubbles){
+    var gallery = new Gallery('gallery', galleryObjects, {displayBubbles: displayBubbles});
     gallery.start();
 }

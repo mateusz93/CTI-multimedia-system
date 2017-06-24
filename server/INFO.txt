@@ -1,5 +1,10 @@
 To do:
 - Spring security dla stron administracyjnych
+- Zmiana konfiguracji powinna odświeżać telewizory, aby odzwierciedlano na nich zmiany
+- Przygotować serwer
+- Kalendarz
+- Dynamiczne odświeżanie gdy usuniemy / dodamy prezentację, która akurat powinna się wyświetlać
+- Nie działa auto-dopasowanie rozmiaru obiektu do rozmiaru ekranu po przeniesieniu szablonu do springa
 
 Done:
 - Modele bazy danych

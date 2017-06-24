@@ -6,4 +6,5 @@ import pl.lodz.p.cti.models.ConfigurationModel;
 
 @Transactional
 public interface ConfigurationDAO extends JpaRepository<ConfigurationModel, Long> {
+	ConfigurationModel findByName(String name);
 }

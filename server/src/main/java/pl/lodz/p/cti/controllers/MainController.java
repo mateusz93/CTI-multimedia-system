@@ -16,6 +16,7 @@ import pl.lodz.p.cti.exceptions.UnsupportedExtensionException;
 import pl.lodz.p.cti.exceptions.ValidationException;
 import pl.lodz.p.cti.models.CollectionModel;
 import pl.lodz.p.cti.models.CollectionObjectModel;
+import pl.lodz.p.cti.models.ConfigurationModel;
 import pl.lodz.p.cti.models.ObjectModel;
 import pl.lodz.p.cti.models.PresentationModel;
 import pl.lodz.p.cti.models.TvModel;
@@ -98,6 +99,14 @@ public class MainController {
                     .stream().map(CollectionObjectModel::getObjectModel).collect(Collectors.toList()));
         }
         model.addAttribute("tvId",tvModel.getId());
+    	ConfigurationModel displayTime =  configurationService.findByName("displayTime");
+    	ConfigurationModel displayBubbles =  configurationService.findByName("displayBubbles");
+    	ConfigurationModel displayHeader =  configurationService.findByName("displayHeader");
+    	ConfigurationModel headerText =  configurationService.findByName("headerText");
+        model.addAttribute("displayTime", displayTime == null ? 5 : Integer.valueOf(displayTime.getValue()));
+        model.addAttribute("displayBubbles", displayBubbles == null ? "true" : displayBubbles.getValue());
+        model.addAttribute("displayHeader", displayHeader == null ? true : displayHeader.getValue().equals("true"));
+        model.addAttribute("headerText", headerText == null ? "" : headerText.getValue());
         return "presentation";
     }
 
@@ -250,6 +259,73 @@ public class MainController {
         model.addAttribute("collectionWrapper",new CollectionWrapper());
         model.addAttribute("green",generateStatement(Statements.CHOSEN_COLLECTION_REMOVED));
         return "modifyCollection";
+    }
+    
+    @RequestMapping(value={"/configuration"},method = RequestMethod.GET)
+    public String modifyConfigurationGET(Model model) throws ValidationException {
+    	ConfigurationModel displayTime =  configurationService.findByName("displayTime");
+    	ConfigurationModel displayBubbles =  configurationService.findByName("displayBubbles");
+    	ConfigurationModel displayHeader =  configurationService.findByName("displayHeader");
+    	ConfigurationModel headerText =  configurationService.findByName("headerText");
+        model.addAttribute("displayTime", displayTime == null ? "5" : displayTime.getValue());
+        model.addAttribute("displayBubbles", displayBubbles == null ? "true" : displayBubbles.getValue());
+        model.addAttribute("displayHeader", displayHeader == null ? "true" : displayHeader.getValue());
+        model.addAttribute("headerText", headerText == null ? "" : headerText.getValue());
+        model.addAttribute("trueValue", "true");
+        return "configuration";
+    }
+    
+    @RequestMapping(value={"/configuration"},method = RequestMethod.POST)
+    public String modifyConfigurationPOST(Model model, String displayTime, String displayBubbles, String displayHeader, String headerText) throws ValidationException {
+    	ConfigurationModel displayTimeObj =  configurationService.findByName("displayTime");
+    	if (displayTimeObj == null)
+    	{
+    		displayTimeObj = new ConfigurationModel();
+    		displayTimeObj.setName("displayTime");
+    		displayTimeObj.setValue("5");
+    	}
+    	try
+    	{
+    		int time = Integer.valueOf(displayTime);
+    		if (time > 0) displayTimeObj.setValue(displayTime);
+    	} catch (NumberFormatException nfe)
+    	{
+    		//Ignore
+    	}
+    	configurationService.save(displayTimeObj);
+    	ConfigurationModel displayBubblesObj =  configurationService.findByName("displayBubbles");
+    	if (displayBubblesObj == null)
+    	{
+    		displayBubblesObj = new ConfigurationModel();
+    		displayBubblesObj.setName("displayBubbles");
+    		displayBubblesObj.setValue("true");
+    	}
+    	if (displayBubbles.equals("true") || displayBubbles.equals("false")) displayBubblesObj.setValue(displayBubbles);
+    	configurationService.save(displayBubblesObj);
+    	ConfigurationModel displayHeaderObj =  configurationService.findByName("displayHeader");
+    	if (displayHeaderObj == null)
+    	{
+    		displayHeaderObj = new ConfigurationModel();
+    		displayHeaderObj.setName("displayHeader");
+    		displayHeaderObj.setValue("true");
+    	}
+    	if (displayHeader.equals("true") || displayHeader.equals("false")) displayHeaderObj.setValue(displayHeader);
+    	configurationService.save(displayHeaderObj);
+    	ConfigurationModel headerTextObj =  configurationService.findByName("headerText");
+    	if (headerTextObj == null)
+    	{
+    		headerTextObj = new ConfigurationModel();
+    		headerTextObj.setName("headerText");
+    		headerTextObj.setValue("");
+    	}
+    	headerTextObj.setValue(headerText);
+    	configurationService.save(headerTextObj);
+        model.addAttribute("displayTime", displayTimeObj.getValue());
+        model.addAttribute("displayBubbles", displayBubblesObj.getValue());
+        model.addAttribute("displayHeader", displayHeaderObj.getValue());
+        model.addAttribute("headerText", headerTextObj.getValue());
+        model.addAttribute("trueValue", "true");
+        return "configuration";
     }
 
 /*    @MessageMapping("/register")
