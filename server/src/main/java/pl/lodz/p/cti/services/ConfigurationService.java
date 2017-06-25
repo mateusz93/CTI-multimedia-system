@@ -2,23 +2,23 @@ package pl.lodz.p.cti.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.dao.ConfigurationDAO;
+import pl.lodz.p.cti.repository.ConfigurationRepository;
 import pl.lodz.p.cti.models.ConfigurationModel;
 
 @Service
 public class ConfigurationService {
 
-    private ConfigurationDAO configurationDAO;
+    private ConfigurationRepository configurationRepository;
 
     @Autowired
-    ConfigurationService(ConfigurationDAO configurationDAO){
-        this.configurationDAO = configurationDAO;
+    ConfigurationService(ConfigurationRepository configurationRepository){
+        this.configurationRepository = configurationRepository;
     }
 
     public ConfigurationModel findByName(String name) {
-        return configurationDAO.findByName(name);
+        return configurationRepository.findByName(name);
     }
     public ConfigurationModel save(ConfigurationModel configurationModel) {
-        return configurationDAO.save(configurationModel);
+        return configurationRepository.save(configurationModel);
     }
 }

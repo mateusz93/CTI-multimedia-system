@@ -2,7 +2,7 @@ package pl.lodz.p.cti.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.dao.PresentationDAO;
+import pl.lodz.p.cti.repository.PresentationRepository;
 import pl.lodz.p.cti.models.PresentationModel;
 
 import java.time.LocalTime;
@@ -10,34 +10,34 @@ import java.util.List;
 
 @Service
 public class PresentationService {
-    private PresentationDAO presentationDAO;
+    private PresentationRepository presentationRepository;
 
     @Autowired
-    PresentationService(PresentationDAO presentationDAO){
-        this.presentationDAO = presentationDAO;
+    PresentationService(PresentationRepository presentationRepository){
+        this.presentationRepository = presentationRepository;
     }
 
     public List<PresentationModel> findByTvId(Long id) {
-        return presentationDAO.findByTvId(id);
+        return presentationRepository.findByTvId(id);
     }
 
     public List<PresentationModel> findAll() {
-        return presentationDAO.findAll();
+        return presentationRepository.findAll();
     }
 
     public List<PresentationModel> deleteByTvId(Long tvId) {
-        return presentationDAO.deleteByTvId(tvId);
+        return presentationRepository.deleteByTvId(tvId);
     }
 
     public PresentationModel save(PresentationModel presentationModel) {
-        return presentationDAO.save(presentationModel);
+        return presentationRepository.save(presentationModel);
     }
 
     public void delete(Long presentationId) {
-        presentationDAO.delete(presentationId);
+        presentationRepository.delete(presentationId);
     }
 
     public PresentationModel findByTvIdAndStartTime(Long tvId, LocalTime startTime) {
-        return presentationDAO.findByTvIdAndStartTime(tvId,startTime);
+        return presentationRepository.findByTvIdAndStartTime(tvId,startTime);
     }
 }

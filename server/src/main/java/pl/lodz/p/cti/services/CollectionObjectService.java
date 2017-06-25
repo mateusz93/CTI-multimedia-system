@@ -2,33 +2,33 @@ package pl.lodz.p.cti.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.dao.CollectionObjectDAO;
+import pl.lodz.p.cti.repository.CollectionObjectRepository;
 import pl.lodz.p.cti.models.CollectionObjectModel;
 
 import java.util.List;
 
 @Service
 public class CollectionObjectService {
-    private CollectionObjectDAO collectionObjectDAO;
+    private CollectionObjectRepository collectionObjectRepository;
 
     @Autowired
-    CollectionObjectService(CollectionObjectDAO collectionObjectDAO){
-        this.collectionObjectDAO = collectionObjectDAO;
+    CollectionObjectService(CollectionObjectRepository collectionObjectRepository){
+        this.collectionObjectRepository = collectionObjectRepository;
     }
 
     public List<CollectionObjectModel> save(List<CollectionObjectModel> collectionObjectModelList) {
-        return collectionObjectDAO.save(collectionObjectModelList);
+        return collectionObjectRepository.save(collectionObjectModelList);
     }
 
     public List<CollectionObjectModel> findByCollectionId(Long collectionId) {
-        return collectionObjectDAO.findByCollectionId(collectionId);
+        return collectionObjectRepository.findByCollectionId(collectionId);
     }
 
     public void delete(List<CollectionObjectModel> collectionObjectModelList) {
-        collectionObjectDAO.delete(collectionObjectModelList);
+        collectionObjectRepository.delete(collectionObjectModelList);
     }
 
     public List<CollectionObjectModel> findAll() {
-        return collectionObjectDAO.findAll();
+        return collectionObjectRepository.findAll();
     }
 }
