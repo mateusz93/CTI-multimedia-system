@@ -252,6 +252,16 @@
                 			<input type="text" id="cfg_headertext" name="headerText" class="form-control" th:value="${headerText}" />
                 		</div>
                 	</div>
+                	<div class="row">
+                		<div class="col-xs-3">
+                			<label for="cfg_placeholder">Obiekt wyświetlany przy braku prezentacji: </label>
+                		</div>
+                		<div class="col-xs-9">
+                			<select name="placeholder" id="cfg_placeholder" class="form-control">
+                                <option th:each="object : ${objects}" th:value="${object.id}" th:text="${object.name}" th:selected="${placeholder == object.id}"></option>
+                			</select>
+                		</div>
+                	</div>
                     <input id="submit" name="submit" class="button" type="submit" value="Zapisz konfigurację"/>
                 </form>
             </div>
