@@ -2,12 +2,19 @@ package pl.lodz.p.cti.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString(exclude = {"format"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class ScheduleJSModel {
@@ -20,7 +27,7 @@ public class ScheduleJSModel {
     private Long event_length;
     private Long event_parent;
     private Long collection;
-    private DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+    private static DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH);
 
     public ScheduleJSModel(ScheduleModel model) {
         super();

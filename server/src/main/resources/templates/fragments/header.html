@@ -2,7 +2,7 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
-    <div th:fragment="header-css">
+    <div th:fragment="header-css" th:remove="tag">
         <!-- this is header-css -->
         <link rel="stylesheet" href="css/bootstrap.min.css"/>
         <link href="css/montserrat.css" rel="stylesheet" type="text/css"/>

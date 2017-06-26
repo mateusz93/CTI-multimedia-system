@@ -11,7 +11,16 @@
 		<!--<script src="js/ext/dhtmlxscheduler_key_nav.js" type="text/javascript" charset="utf-8"></script>-->
 		<script src="js/ext/dhtmlxscheduler_recurring.js" type="text/javascript" charset="utf-8"></script>
 
-		<div th:replace="fragments/header :: header-css"/>
+		<div th:replace="fragments/header :: header-css" th:remove="tag"/>
+		
+		<style type="text/css">
+		html, body{
+				margin:0px;
+				padding:0px;
+				height:100%;
+				overflow:hidden;
+			}
+		</style>
 
 		<script th:inline="javascript">
 			function init() {
@@ -75,7 +84,7 @@
         <div class="container" style="margin-top: 50px;">
         	<center><span style="font-size: 24px;">Konfiguracja telewizora - <span th:text="${tv.name}"></span> <button onclick="save();" class="btn btn-success btn-lg">Zapisz</button></span></center>
         </div>
-			<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:calc(100% - 100px);'>
+			<div id="scheduler_here" class="dhx_cal_container" style='width:100%; height:calc(100% - 125px);'>
 				<div class="dhx_cal_navline">
 					<div class="dhx_cal_prev_button">&nbsp;</div>
 					<div class="dhx_cal_next_button">&nbsp;</div>

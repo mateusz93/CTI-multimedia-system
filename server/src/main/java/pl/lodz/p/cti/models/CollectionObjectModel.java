@@ -3,7 +3,11 @@ package pl.lodz.p.cti.models;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +17,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString(exclude = {"collection", "objectModel"})
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

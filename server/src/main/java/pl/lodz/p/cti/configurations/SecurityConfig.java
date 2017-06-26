@@ -37,8 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .headers().frameOptions().disable().and()
                 .authorizeRequests()
-                    .antMatchers("/", "/objects", "/index", "/presentations", "/tv/**").permitAll()
+                    .antMatchers("/", "/index", "/getObject/**", "/tv/**", "/cti-websocket/**").permitAll()
                     .antMatchers("/configuration/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/removeCollection/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/addCollection/**").hasAnyRole(ADMIN_ROLE)
@@ -46,11 +47,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/removePresentation/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/addPresentation/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/modifyPresentation/**").hasAnyRole(ADMIN_ROLE)
-                    .antMatchers("/getObject/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/addObject/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/modifyObject/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/removeObject/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/modifySchedule/**").hasAnyRole(ADMIN_ROLE)
+                    .antMatchers("/objects/**").hasAnyRole(ADMIN_ROLE)
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()
