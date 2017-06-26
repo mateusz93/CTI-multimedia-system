@@ -3,11 +3,7 @@ package pl.lodz.p.cti.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.lodz.p.cti.exceptions.MissingNecessaryObjectException;
 import pl.lodz.p.cti.exceptions.TvModelDoesntExistsException;
@@ -68,11 +64,21 @@ public class MainController {
         this.tvService = tvService;
     }
 
+    @GetMapping("/login")
+    public String login() {
+        return "/login";
+    }
+
+    @GetMapping("/403")
+    public String error403() {
+        return "/error/403";
+    }
+
     @RequestMapping(value = {"/"}, method = RequestMethod.GET)
     public String indexGET(HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         TvModel tvModel = tvService.findByIp(ip);
-        return tvModel == null ? "index" : "redirect:/"+tvModel.getHash()+"/";
+        return tvModel == null ? "index" : "redirect:/tv/"+tvModel.getHash()+"/";
     }
 
     @RequestMapping(value = "/", method = RequestMethod.POST)
@@ -82,10 +88,10 @@ public class MainController {
         do {
             hash = nextSessionId();
         } while (tvService.findByHash(hash) != null);
-        return "redirect:/"+tvService.save(new TvModel(ip, name, hash)).getHash()+"/";
+        return "redirect:/tv/"+tvService.save(new TvModel(ip, name, hash)).getHash()+"/";
     }
 
-    @RequestMapping(value={"/{hash}/"},method = RequestMethod.GET)
+    @RequestMapping(value={"/tv/{hash}/"},method = RequestMethod.GET)
     public String hashGET(Model model, @PathVariable String hash) throws ValidationException {
         TvModel tvModel = tvService.findByHash(hash);
         if(tvModel == null){

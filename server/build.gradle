@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '1.5.3.RELEASE'
+		springBootVersion = '1.5.4.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -25,10 +25,13 @@ repositories {
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-websocket")
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
+	compile("org.springframework.boot:spring-boot-starter-data-jpa")
+	compile("org.springframework.boot:spring-boot-starter-security")
+	compile("org.webjars:bootstrap:3.3.7")
 	compile("org.webjars:sockjs-client:1.1.2")
 	compile("org.webjars:stomp-websocket:2.3.3-1")
+	compile("org.projectlombok:lombok:1.16.16")
 /*	compile('org.springframework.boot:spring-boot-starter-web')*/
-	runtime('mysql:mysql-connector-java')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	runtime("mysql:mysql-connector-java")
+	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
