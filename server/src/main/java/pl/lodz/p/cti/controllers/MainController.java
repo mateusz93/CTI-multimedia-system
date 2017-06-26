@@ -1,8 +1,15 @@
 package pl.lodz.p.cti.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.lodz.p.cti.exceptions.MissingNecessaryObjectException;
@@ -10,17 +17,22 @@ import pl.lodz.p.cti.exceptions.TvModelDoesntExistsException;
 import pl.lodz.p.cti.exceptions.UnexpectedErrorException;
 import pl.lodz.p.cti.exceptions.UnsupportedExtensionException;
 import pl.lodz.p.cti.exceptions.ValidationException;
+import pl.lodz.p.cti.messages.ForceRefreshMessage;
 import pl.lodz.p.cti.models.CollectionModel;
 import pl.lodz.p.cti.models.CollectionObjectModel;
 import pl.lodz.p.cti.models.ConfigurationModel;
+import pl.lodz.p.cti.models.MapJSModel;
 import pl.lodz.p.cti.models.ObjectModel;
 import pl.lodz.p.cti.models.PresentationModel;
+import pl.lodz.p.cti.models.ScheduleJSModel;
+import pl.lodz.p.cti.models.ScheduleModel;
 import pl.lodz.p.cti.models.TvModel;
 import pl.lodz.p.cti.services.CollectionObjectService;
 import pl.lodz.p.cti.services.CollectionService;
 import pl.lodz.p.cti.services.ConfigurationService;
 import pl.lodz.p.cti.services.ObjectService;
 import pl.lodz.p.cti.services.PresentationService;
+import pl.lodz.p.cti.services.ScheduleService;
 import pl.lodz.p.cti.services.TvService;
 import pl.lodz.p.cti.utils.CollectionWrapper;
 import pl.lodz.p.cti.utils.Statements;
@@ -29,13 +41,16 @@ import pl.lodz.p.cti.utils.StringToLocalTimeConverter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
-import static pl.lodz.p.cti.utils.ActualPresentationFinder.findActualPresentation;
+import static pl.lodz.p.cti.utils.ActualScheduleFinder.findActualSchedule;
 import static pl.lodz.p.cti.utils.SessionIdentifierGenerator.nextSessionId;
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
@@ -54,14 +69,20 @@ public class MainController {
 
     private TvService tvService;
 
+    private ScheduleService scheduleService;
+
+    private SimpMessagingTemplate template;
+
     @Autowired
-    public MainController(CollectionObjectService collectionObjectService, CollectionService collectionService, ConfigurationService configurationService, ObjectService objectService, PresentationService presentationService, TvService tvService){
+    public MainController(CollectionObjectService collectionObjectService, CollectionService collectionService, ConfigurationService configurationService, ObjectService objectService, PresentationService presentationService, TvService tvService, ScheduleService scheduleService, SimpMessagingTemplate template){
         this.collectionObjectService = collectionObjectService;
         this.collectionService = collectionService;
         this.configurationService = configurationService;
         this.objectService = objectService;
         this.presentationService = presentationService;
         this.tvService = tvService;
+        this.scheduleService = scheduleService;
+        this.template = template;
     }
 
     @GetMapping("/login")
@@ -96,12 +117,45 @@ public class MainController {
         TvModel tvModel = tvService.findByHash(hash);
         if(tvModel == null){
             throw new TvModelDoesntExistsException(TvModel.PROPERTY_HASH, hash);
-        }
+        }/*
         PresentationModel actualPresentation = findActualPresentation(presentationService.findByTvId(tvModel.getId()));
         if(actualPresentation==null) {
             model.addAttribute("objects", null);
         } else {
             model.addAttribute("objects", actualPresentation.getCollection().getCollectionObjects()
+                    .stream().map(CollectionObjectModel::getObjectModel).collect(Collectors.toList()));
+        }*/
+        ScheduleModel actualSchedule = findActualSchedule(scheduleService.findByTvId(tvModel.getId()));
+        if(actualSchedule==null) {
+        	try
+        	{
+	        	ConfigurationModel placeholderObj =  configurationService.findByName("placeholder");
+	        	if (placeholderObj != null)
+	        	{
+		        	ObjectModel placeholder = objectService.findOne(Long.valueOf(placeholderObj.getValue()));
+		        	if (placeholder != null)
+		        	{
+		        		List<ObjectModel> objects = new ArrayList<ObjectModel>();
+		        		objects.add(placeholder);
+		                model.addAttribute("objects", objects);
+		        	}
+		        	else
+		        	{
+		                model.addAttribute("objects", null);
+		        	}
+	        	}
+	        	else
+	        	{
+	                model.addAttribute("objects", null);
+	        	}
+        	}
+        	catch (NumberFormatException nfe)
+        	{
+        		//Ignore
+                model.addAttribute("objects", null);
+        	}
+        } else {
+            model.addAttribute("objects", actualSchedule.getCollection().getCollectionObjects()
                     .stream().map(CollectionObjectModel::getObjectModel).collect(Collectors.toList()));
         }
         model.addAttribute("tvId",tvModel.getId());
@@ -273,16 +327,19 @@ public class MainController {
     	ConfigurationModel displayBubbles =  configurationService.findByName("displayBubbles");
     	ConfigurationModel displayHeader =  configurationService.findByName("displayHeader");
     	ConfigurationModel headerText =  configurationService.findByName("headerText");
+    	ConfigurationModel placeholder =  configurationService.findByName("placeholder");
         model.addAttribute("displayTime", displayTime == null ? "5" : displayTime.getValue());
         model.addAttribute("displayBubbles", displayBubbles == null ? "true" : displayBubbles.getValue());
         model.addAttribute("displayHeader", displayHeader == null ? "true" : displayHeader.getValue());
         model.addAttribute("headerText", headerText == null ? "" : headerText.getValue());
+        model.addAttribute("placeholder", placeholder == null ? 0 : Long.valueOf(placeholder.getValue()));
+        model.addAttribute("objects",objectService.findAll());
         model.addAttribute("trueValue", "true");
         return "configuration";
     }
     
     @RequestMapping(value={"/configuration"},method = RequestMethod.POST)
-    public String modifyConfigurationPOST(Model model, String displayTime, String displayBubbles, String displayHeader, String headerText) throws ValidationException {
+    public String modifyConfigurationPOST(Model model, String displayTime, String displayBubbles, String displayHeader, String headerText, String placeholder) throws ValidationException {
     	ConfigurationModel displayTimeObj =  configurationService.findByName("displayTime");
     	if (displayTimeObj == null)
     	{
@@ -326,12 +383,91 @@ public class MainController {
     	}
     	headerTextObj.setValue(headerText);
     	configurationService.save(headerTextObj);
+    	ConfigurationModel placeholderObj =  configurationService.findByName("placeholder");
+    	if (placeholderObj == null)
+    	{
+    		placeholderObj = new ConfigurationModel();
+    		placeholderObj.setName("placeholder");
+    		placeholderObj.setValue("0");
+    	}
+    	try
+    	{
+    		Long id = Long.valueOf(placeholder);
+    		if (objectService.findOne(id) != null) placeholderObj.setValue(placeholder);
+    	} catch (NumberFormatException nfe)
+    	{
+    		//Ignore
+    	}
+    	configurationService.save(placeholderObj);
+    	for (TvModel tv : tvService.findAll())
+    	{
+    		forceRefresh(tv.getId());
+    	}
         model.addAttribute("displayTime", displayTimeObj.getValue());
         model.addAttribute("displayBubbles", displayBubblesObj.getValue());
         model.addAttribute("displayHeader", displayHeaderObj.getValue());
         model.addAttribute("headerText", headerTextObj.getValue());
+        model.addAttribute("placeholder", Long.valueOf(placeholderObj.getValue()));
+        model.addAttribute("objects",objectService.findAll());
         model.addAttribute("trueValue", "true");
         return "configuration";
+    }
+
+    @RequestMapping(value={"/modifySchedule"},method = RequestMethod.GET)
+    public String modifyScheduleGET(Model model, @RequestParam(value="tvId", required=true) Long tvId) throws ValidationException {
+    	TvModel tvModel = tvService.findOne(tvId);
+    	if (tvModel == null)
+    	{
+    		return "redirect:/modifyPresentation";
+    	}
+        model.addAttribute("collections", collectionService.findAll().stream().map(e -> (new MapJSModel(e))).collect(Collectors.toList()));
+        model.addAttribute("schedules", scheduleService.findByTvId(tvId).stream().map(e -> (new ScheduleJSModel(e))).collect(Collectors.toList()));
+        model.addAttribute("tv", tvModel);
+        return "modifySchedule";
+    }
+
+    @RequestMapping(value={"/modifySchedule"},method = RequestMethod.POST)
+    public String modifySchedulePOST(Model model, @RequestParam(value="tvId", required=true) Long tvId, @RequestBody List<ScheduleJSModel> schedules) throws ValidationException {
+    	TvModel tvModel = tvService.findOne(tvId);
+    	if (tvModel == null)
+    	{
+    		return "redirect:/modifyPresentation";
+    	}
+    	DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+    	List<ScheduleModel> schedulesToSave = new ArrayList<>();
+    	List<ScheduleModel> schedulesToRemove = scheduleService.findByTvId(tvId);
+    	for (ScheduleJSModel m : schedules)
+    	{
+    		ScheduleModel scheduleModel = null;
+    		if (m.getId() != null) scheduleModel = scheduleService.findOne(m.getId());
+    		if (scheduleModel == null) scheduleModel = new ScheduleModel();
+    		scheduleModel.setCollection(collectionService.findOne(m.getCollection()));
+    		scheduleModel.setEndTime(LocalDateTime.parse(m.getEnd_date(), format));
+    		if (m.getEvent_length() != null) scheduleModel.setEventLength(m.getEvent_length());
+    		else scheduleModel.setEventLength(0L);
+    		if (m.getEvent_parent() != null) scheduleModel.setEventParent(scheduleService.findOne(m.getEvent_parent()));
+    		scheduleModel.setRecurrence(m.getRec_type());
+    		scheduleModel.setStartTime(LocalDateTime.parse(m.getStart_date(), format));
+    		scheduleModel.setText(m.getText());
+    		scheduleModel.setTv(tvModel);
+    		scheduleService.save(scheduleModel);
+    		schedulesToSave.add(scheduleModel);
+    	}
+    	schedulesToRemove.removeAll(schedulesToSave);
+    	for (ScheduleModel m : schedulesToRemove)
+    	{
+    		scheduleService.delete(m.getId());
+    	}
+        model.addAttribute("collections", collectionService.findAll().stream().map(e -> (new MapJSModel(e))).collect(Collectors.toList()));
+        model.addAttribute("schedules", schedules);
+        model.addAttribute("tv", tvModel);
+    	forceRefresh(tvModel.getId());
+        return "modifySchedule";
+    }
+
+    private void forceRefresh(Long tvId) {
+        System.out.println("ForceRefresh!");
+        this.template.convertAndSend("/topic/forceRefresh", new ForceRefreshMessage(tvId));
     }
 
 /*    @MessageMapping("/register")

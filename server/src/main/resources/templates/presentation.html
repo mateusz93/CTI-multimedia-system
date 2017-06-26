@@ -43,10 +43,10 @@
     <div class="jumbotron gallery-container" id="gallery">
       <div class="displayed-object" th:each="object, iter : ${objects}">
         <div th:if="${#strings.endsWith(object.contentType,'mp4')}">
-          <video width="100%" th:id="|object${iter.index}|" th:src="@{/getObject(id=${object.id})}"/>
+          <video class="video-object" th:id="|object${iter.index}|" th:src="@{/getObject(id=${object.id})}"/>
         </div>
         <div th:unless="${#strings.endsWith(object.contentType,'mp4')}">
-          <img width="100%" th:src="@{/getObject(id=${object.id})}" th:id="|object${iter.index}|"/>
+          <img class="image-object" th:src="@{/getObject(id=${object.id})}" th:id="|object${iter.index}|"/>
         </div>
       </div>
     </div>
@@ -71,10 +71,18 @@
                 console.log('Connected: ' + frame);
                 stompClient.subscribe('/topic/forceRefresh', function (forceRefresh) {
                     var forceRefreshObject = JSON.parse(forceRefresh.body);
+                    console.info(forceRefreshObject);
                     if(forceRefreshObject.tvId===tvId){
                         location.reload();
                     }
                 });
+            }, function(error) {
+            	if (error == "Whoops! Lost connection to http://localhost:8080/cti-websocket")
+            	{
+            		stompClient = null;
+            		window.setTimeout(connect, 5000);
+            		console.info('Connection lost, trying to reconnect in 5 seconds...');
+            	}
             });
         }
 

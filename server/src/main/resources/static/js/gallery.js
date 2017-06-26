@@ -34,18 +34,21 @@ function Gallery(elementID, objects, options)
         var obj = galleryObjects[currentObjectIndex];
         obj.addEventListener('stop', loadNextImage);
         var layout = $(obj.getLayout(currentObjectIndex));
-        layout.hide();
-        element.append(layout);
-        layout.show('slide', {direction: 'right'}, 500, function(){
-            obj.start();
-        });
-        while (currentlyDisplayed.length > 0)
+        if (galleryObjects.length > 1 || currentlyDisplayed.length == 0)
         {
-            currentlyDisplayed.pop().hide('slide', {direction: 'left'}, 500, function(){
-            });
+	        layout.hide();
+	        element.append(layout);
+	        layout.show('slide', {direction: 'right'}, 500, function(){
+	            obj.start();
+	        });
+	        while (currentlyDisplayed.length > 0)
+	        {
+	            currentlyDisplayed.pop().hide('slide', {direction: 'left'}, 500, function(){
+	            });
+	        }
+	        currentlyDisplayed.push(layout);
+	        highlightActiveBubble();
         }
-        currentlyDisplayed.push(layout);
-        highlightActiveBubble();
         currentObjectIndex++;
         if (currentObjectIndex == galleryObjects.length) currentObjectIndex -= galleryObjects.length;
         else if (currentObjectIndex > galleryObjects.length) currentObjectIndex = 0;
