@@ -50,6 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/addObject/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/modifyObject/**").hasAnyRole(ADMIN_ROLE)
                     .antMatchers("/removeObject/**").hasAnyRole(ADMIN_ROLE)
+                    .antMatchers("/modifySchedule/**").hasAnyRole(ADMIN_ROLE)
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()

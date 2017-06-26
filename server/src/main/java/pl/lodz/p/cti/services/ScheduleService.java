@@ -2,41 +2,41 @@ package pl.lodz.p.cti.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.dao.ScheduleDAO;
+import pl.lodz.p.cti.repository.ScheduleRepository;
 import pl.lodz.p.cti.models.ScheduleModel;
 
 import java.util.List;
 
 @Service
 public class ScheduleService {
-    private ScheduleDAO scheduleDAO;
+    private ScheduleRepository scheduleRepository;
 
     @Autowired
-    ScheduleService(ScheduleDAO scheduleDAO){
-        this.scheduleDAO = scheduleDAO;
+    ScheduleService(ScheduleRepository scheduleRepository){
+        this.scheduleRepository = scheduleRepository;
     }
 
     public List<ScheduleModel> findByTvId(Long id) {
-        return scheduleDAO.findByTvId(id);
+        return scheduleRepository.findByTvId(id);
     }
 
     public List<ScheduleModel> findAll() {
-        return scheduleDAO.findAll();
+        return scheduleRepository.findAll();
     }
 
     public List<ScheduleModel> deleteByTvId(Long tvId) {
-        return scheduleDAO.deleteByTvId(tvId);
+        return scheduleRepository.deleteByTvId(tvId);
     }
 
     public ScheduleModel save(ScheduleModel scheduleModel) {
-        return scheduleDAO.save(scheduleModel);
+        return scheduleRepository.save(scheduleModel);
     }
 
     public void delete(Long scheduleId) {
-    	scheduleDAO.delete(scheduleId);
+    	scheduleRepository.delete(scheduleId);
     }
 
     public ScheduleModel findOne(Long scheduleId) {
-        return scheduleDAO.findOne(scheduleId);
+        return scheduleRepository.findOne(scheduleId);
     }
 }
