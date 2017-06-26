@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>System zarządzania treścią multimedialną w CTI</title>
+
+    <div th:replace="fragments/header :: header-css"/>
 </head>
 <body onload="enterTvName()">
 
@@ -15,6 +17,8 @@ function enterTvName()
 }
 //]]>
 </script>
+<div th:replace="fragments/header :: header"/>
+
     <form id="form" action="#" th:action="@{/}" method="post">
         <input id="name" name="name" hidden="hidden"/>
     </form>
