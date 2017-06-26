@@ -17,6 +17,7 @@ buildscript {
 	}
 }
 
+apply plugin: 'war'
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
