@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
 
     <div th:replace="fragments/header :: header-css"/>
-
     <script th:inline="javascript">
         /*<![CDATA[*/
         function generateRows() {
@@ -37,9 +36,7 @@
     </script>
 </head>
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
-
 <div th:replace="fragments/header :: header"/>
-
 <div id="container" class="container">
     <div id="inner_container" style="padding-top:80px;text-align:center;">
         <form method="post" action="addCollection" modelAttribute="collectionWrapper">

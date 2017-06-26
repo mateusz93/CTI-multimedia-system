@@ -8,10 +8,10 @@
     <title>TV in CTI - Concept Template</title>
 
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
 
     <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="../css/bootstrap-theme.min.css" />
 
     <!-- Gallery theme - Concept -->
     <link rel="stylesheet" href="../css/gallery.css"/>
@@ -51,24 +51,28 @@
       </div>
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/jquery.min.js"></script>
     <!-- Latest compiled and minified JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="../js/bootstrap.min.js"></script>
     <!-- jQuery UI -->
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="../js/jquery-ui.min.js"></script>
     <!-- Gallery script - Concept -->
     <script src="../js/gallery.js?"></script>
     <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
     <script th:inline="javascript">
+        /*<![CDATA[*/
         var stompClient = null;
         var tvId = [[${tvId}]];
         var objects = [[${objects}]];
+        var connectionLost = false;
         function connect() {
             var socket = new SockJS('/cti-websocket');
             stompClient = Stomp.over(socket);
             stompClient.connect({}, function (frame) {
                 console.log('Connected: ' + frame);
+                //HACK: Telewizor niepoprawnie obsługuje video przy utraceniu połączenia ze zródłem jeśli strona jest osadzona w ramce
+                if (inIframe() && connectionLost) location.reload();
                 stompClient.subscribe('/topic/forceRefresh', function (forceRefresh) {
                     var forceRefreshObject = JSON.parse(forceRefresh.body);
                     console.info(forceRefreshObject);
@@ -77,10 +81,11 @@
                     }
                 });
             }, function(error) {
-            	if (error == "Whoops! Lost connection to http://localhost:8080/cti-websocket")
+            	if (error.indexOf("Whoops! Lost connection to ") == 0)
             	{
             		stompClient = null;
             		window.setTimeout(connect, 5000);
+            		connectionLost = true;
             		console.info('Connection lost, trying to reconnect in 5 seconds...');
             	}
             });
@@ -88,22 +93,24 @@
 
         if(objects!==null) {
             var galleryObjects = [];
-        /*<![CDATA[*/
             for(var i=0; i<objects.length; i++)
-        /*]]>*/
             {
-                if(objects[i].contentType.endsWith("mp4")){
-                    galleryObjects.push(new VideoGalleryObject(i));
-                } else {
-                	var object = new ImageGalleryObject(i);
-                	object.setDisplayTime(1000 * [[${displayTime}]]);
-                    galleryObjects.push(object);
+            	if (objects[i] && objects[i].contentType)
+            	{
+	                if(objects[i].contentType.lastIndexOf("mp4") == objects[i].contentType.length - 3){
+	                    galleryObjects.push(new VideoGalleryObject(i));
+	                } else {
+	                	var object = new ImageGalleryObject(i);
+	                	object.setDisplayTime(1000 * [[${displayTime}]]);
+	                    galleryObjects.push(object);
+	                }
                 }
             }
             setGalleryObjects(galleryObjects, [[${displayBubbles}]]);
         }
 
         window.onload = connect;
+        /*]]>*/
     </script>
   </body>
 </html>

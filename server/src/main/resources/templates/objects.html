@@ -12,7 +12,8 @@
         <div th:replace="fragments/header :: header"/>
 
     <div class="container" style="padding-top: 80px">
-            <div class="row portfolio">
+        <div class="row portfolio">
+            	<!--
                 <div class="col-sm-6 col-md-3">
                     <div class="thumbnail">
                         <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?1" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
@@ -53,6 +54,7 @@
                         <img class="img-responsive" src="http://lorempixel.com/600/400/cats/?8" alt="The awesome description" data-toggle="modal" data-target="#myModal"/>
                     </div>
                 </div>
+                -->
                 <div class="col-sm-6 col-md-3" th:each="object : ${objects}">
                     <div class="thumbnail" th:if="${#strings.endsWith(object.contentType,'mp4')}">
                         <video autoplay="autoplay" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" style="height:175px;width:262px" data-toggle="modal" th:attr="data-target='#myModal'+${object.id}" controls="controls" loop="loop"/>

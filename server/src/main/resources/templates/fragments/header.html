@@ -4,14 +4,11 @@
 <head>
     <div th:fragment="header-css">
         <!-- this is header-css -->
-        <link rel="stylesheet" type="text/css" href="webjars/bootstrap/3.3.7/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-        <link rel="stylesheet" th:href="@{/css/}" href="../../css/" />
-        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css"/>
-        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet" type="text/css"/>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="../../js/"></script>
+        <link rel="stylesheet" href="css/bootstrap.min.css"/>
+        <link href="css/montserrat.css" rel="stylesheet" type="text/css"/>
+        <link href="css/lato.css" rel="stylesheet" type="text/css"/>
+        <script src="js/jquery.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
         <style>
             body {
                 font: 400 15px Lato, sans-serif;
@@ -209,7 +206,6 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="./login">Zaloguj</a></li>
                         <li><a href="./objects">Multimedia</a></li>
-                        <li><a href="./presentations">Prezentacje</a></li>
                         <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
                         <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
                         <li><a href="./modifyPresentation">Zmień prezentację</a></li>
@@ -222,7 +218,6 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li><a href="./logout">Wyloguj</a></li>
                         <li><a href="./objects">Multimedia</a></li>
-                        <li><a href="./presentations">Prezentacje</a></li>
                         <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
                         <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
                         <li><a href="./modifyPresentation">Zmień prezentację</a></li>

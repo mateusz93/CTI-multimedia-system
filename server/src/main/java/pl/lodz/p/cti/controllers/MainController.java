@@ -67,6 +67,7 @@ public class MainController {
         do {
             hash = nextSessionId();
         } while (tvService.findByHash(hash) != null);
+        if (name.length() < 1) name = ip;
         return "redirect:/tv/" + tvService.save(TvModel.builder()
                 .ip(ip)
                 .name(name)
@@ -118,7 +119,7 @@ public class MainController {
         ConfigurationModel displayHeader = configurationService.findByName("displayHeader");
         ConfigurationModel headerText = configurationService.findByName("headerText");
         model.addAttribute("displayTime", displayTime == null ? 5 : Integer.valueOf(displayTime.getValue()));
-        model.addAttribute("displayBubbles", displayBubbles == null ? "true" : displayBubbles.getValue());
+        model.addAttribute("displayBubbles", displayBubbles == null || displayBubbles.getValue().equals("true"));
         model.addAttribute("displayHeader", displayHeader == null || displayHeader.getValue().equals("true"));
         model.addAttribute("headerText", headerText == null ? "" : headerText.getValue());
         return "presentation";
@@ -240,8 +241,8 @@ public class MainController {
 
     @RequestMapping(value = {"/modifyCollection"}, method = RequestMethod.GET)
     public String modifyCollectionGET(Model model) throws ValidationException {
-        List<PresentationModel> presentationModelList = presentationService.findAll();
-        List<Long> collectionIdUsedList = presentationModelList.stream().map(presentationModel -> presentationModel.getCollection().getId()).collect(Collectors.toList());
+        List<ScheduleModel> scheduleModelList = scheduleService.findAll();
+        List<Long> collectionIdUsedList = scheduleModelList.stream().map(scheduleModel -> scheduleModel.getCollection().getId()).collect(Collectors.toList());
         List<CollectionModel> collectionIdNotUsedList = collectionService.findByIdNotIn(collectionIdUsedList);
         model.addAttribute("collections", collectionIdNotUsedList);
         model.addAttribute("objects", objectService.findAll());

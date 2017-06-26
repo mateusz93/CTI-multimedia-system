@@ -77,15 +77,20 @@ function Gallery(elementID, objects, options)
             })(i);
             bubblesContainer.append(bubble);
         }
+        //HACK: Telewizor raportuje swoją nominalną rozdzielczość (1080p) a korzysta z mniejszej (720p)
+        if (inIframe())
+        {
+        	bubblesContainer.css('left', (640 - (galleryObjects.length * galleryOptions.bubbleSize.width) / 2) + 'px');
+        }
         bubblesContainer.width(galleryObjects.length * galleryOptions.bubbleSize.width);
         bubblesContainer.height(galleryOptions.bubbleSize.height);
     };
     var computeBubbleSize = function(){
         var bubble = document.createElement('div');
         bubble.className = 'gallery-bubble';
-        var size = {width: 0, height: 0};
-        size.width = $(bubble).outerWidth(true);
-        size.height = $(bubble).outerHeight(true);
+        var size = {width: 26, height: 26};
+        //size.width = $(bubble).outerWidth(true);
+        //size.height = $(bubble).outerHeight(true);
         return size;
     };
     galleryOptions.bubbleSize = galleryOptions.bubbleSize || computeBubbleSize();
@@ -94,6 +99,12 @@ function Gallery(elementID, objects, options)
         {
             element.append(bubblesContainer);
             drawBubbles();
+        	//HACK: Telewizor raportuje swoją nominalną rozdzielczość (1080p) a korzysta z mniejszej (720p)
+            if (inIframe())
+            {
+            	bubblesContainer.css('bottom', '0px');
+            	bubblesContainer.css('top', '658px');
+            }
         }
         loadNextImage();
     };
@@ -167,14 +178,20 @@ function VideoGalleryObject(id)
 {
     GalleryObject.call(this, id);
     this.video = $("#object"+id);
+    this.isVideoEnabled = this.video.get(0).readyState > 0;
+    this.video.on("canplay", (function(){
+    	this.isVideoEnabled = true;
+    }).bind(this));
 }
 VideoGalleryObject.prototype = Object.create(GalleryObject.prototype);
 VideoGalleryObject.prototype.constructor = VideoGalleryObject;
 VideoGalleryObject.prototype.start = function() {
+    if (!this.isVideoEnabled) return this.dispatchEvent('stop', {});
     this.video.on('ended', this.dispatchEvent.bind(this, 'stop'));
     this.video.get(0).play();
 };
 VideoGalleryObject.prototype.stop = function() {
+    if (!this.isVideoEnabled) return;
     this.video.off('ended');
     this.video.get(0).pause();
     this.video.get(0).currentTime = 0;
@@ -183,4 +200,12 @@ VideoGalleryObject.prototype.stop = function() {
 function setGalleryObjects(galleryObjects, displayBubbles){
     var gallery = new Gallery('gallery', galleryObjects, {displayBubbles: displayBubbles});
     gallery.start();
+}
+
+function inIframe () {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
 }
