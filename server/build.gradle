@@ -6,7 +6,8 @@ buildscript {
 			stompWebsocket		: '2.3.3-1',
 			lombok				: '1.16.16',
 			commonsLang3		: '3.6',
-			commonscollections4 : '4.1'
+			commonscollections4 : '4.1',
+			thymeleafSecurity	: '3.0.2.RELEASE'
 	]
 	repositories {
 		mavenCentral()
@@ -32,6 +33,7 @@ dependencies {
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	compile("org.springframework.boot:spring-boot-starter-data-jpa")
 	compile("org.springframework.boot:spring-boot-starter-security")
+	compile("org.thymeleaf.extras:thymeleaf-extras-springsecurity4")
 	compile("org.webjars:bootstrap:${versions.bootstrap}")
 	compile("org.webjars:sockjs-client:${versions.sockjsClient}")
 	compile("org.webjars:stomp-websocket:${versions.stompWebsocket}")

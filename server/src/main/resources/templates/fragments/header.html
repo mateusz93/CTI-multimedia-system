@@ -1,4 +1,6 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <div th:fragment="header-css">
         <!-- this is header-css -->
@@ -202,16 +204,31 @@
                     <span class="icon-bar"></span>
                 </button>
             </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="./login">Logowanie</a></li>
-                    <li><a href="./objects">Multimedia</a></li>
-                    <li><a href="./presentations">Prezentacje</a></li>
-                    <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
-                    <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
-                    <li><a href="./modifyPresentation">Zmień prezentację</a></li>
-                    <li><a href="./configuration">Konfiguracja</a></li>
-                </ul>
+            <div sec:authorize="isAnonymous()">
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="./login">Zaloguj</a></li>
+                        <li><a href="./objects">Multimedia</a></li>
+                        <li><a href="./presentations">Prezentacje</a></li>
+                        <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
+                        <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
+                        <li><a href="./modifyPresentation">Zmień prezentację</a></li>
+                        <li><a href="./configuration">Konfiguracja</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div sec:authorize="isAuthenticated()">
+                <div class="collapse navbar-collapse" id="myLoggedNavbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="./logout">Wyloguj</a></li>
+                        <li><a href="./objects">Multimedia</a></li>
+                        <li><a href="./presentations">Prezentacje</a></li>
+                        <li><a href="./modifyObject">Dodaj/usuń multimedia</a></li>
+                        <li><a href="./modifyCollection">Dodaj/usuń kolekcję</a></li>
+                        <li><a href="./modifyPresentation">Zmień prezentację</a></li>
+                        <li><a href="./configuration">Konfiguracja</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
