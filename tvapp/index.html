@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>CTI_TV_System</title>
+
+		<!-- TODO : Common API -->
+		<script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/API/Widget.js"></script>
+		<script type="text/javascript" language="javascript" src="$MANAGER_WIDGET/Common/API/TVKeyValue.js"></script>
+		
+	    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) --
+	    <script language="javascript" type="text/javascript" src="app/javascript/jquery.min.js"></script>
+	    <!-- Latest compiled and minified JavaScript --
+	    <script language="javascript" type="text/javascript" src="app/javascript/bootstrap.min.js"></script>
+	    <!-- jQuery UI --
+	    <script language="javascript" type="text/javascript" src="app/javascript/jquery-ui.min.js"></script>
+	    <!-- Gallery script - Concept --
+	    <script language="javascript" type="text/javascript" src="app/javascript/gallery.js"></script>
+		-->
+		<!-- TODO : Javascript code -->
+		<script language="javascript" type="text/javascript" src="app/javascript/Main.js"></script>
+
+		<!-- TODO : Style sheets code -->
+		<link rel="stylesheet" href="app/stylesheets/Main.css" type="text/css">
+
+	    <!-- Latest compiled and minified CSS --
+	    <link rel="stylesheet" href="app/stylesheets/bootstrap.min.css" type="text/css">
+	
+	    <!-- Optional theme --
+	    <link rel="stylesheet" href="app/stylesheets/bootstrap-theme.min.css" type="text/css">
+	
+	    <!-- Gallery theme - Concept --
+	    <link rel="stylesheet" href="app/stylesheets/gallery.css" type="text/css">
+		-->
+		<!-- TODO: Plugins -->
+
+	</head>
+
+	<body onload="Main.onLoad();" onunload="Main.onUnload();">
+
+		<!-- Dummy anchor as focus for key events -->
+		<a href="javascript:void(0);" id="anchor" onkeydown="Main.keyDown();"></a>
+
+		<!-- 
+	    <nav class="navbar navbar-inverse navbar-fixed-top gallery-navbar">
+	      <div class="container">
+	        <div class="navbar-header">
+	          <a class="navbar-brand" href="#">TV in CTI - Concept Template</a>
+	        </div>
+	      </div>
+	    </nav>
+	
+	    <!-- Main jumbotron for a primary marketing message or call to action --
+	    <div class="jumbotron gallery-container" id="gallery"></div>
+	    -->
+	    <div style="width:100%; height: 100%;">
+	    	<iframe src="http://10.0.2.2:8090/" style="width:100%; height: 100%;"></iframe>
+	    </div>
+	</body>
+</html>
