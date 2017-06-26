@@ -1,12 +1,18 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.4.RELEASE'
-	}
+	ext.versions = [
+			springBoot 	    	: '1.5.4.RELEASE',
+			bootstrap			: '3.3.7',
+			sockjsClient		: '1.1.2',
+			stompWebsocket		: '2.3.3-1',
+			lombok				: '1.16.16',
+			commonsLang3		: '3.6',
+			commonscollections4 : '4.1'
+	]
 	repositories {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${versions.springBoot}")
 	}
 }
 
@@ -14,23 +20,24 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 
-version = '0.0.1-SNAPSHOT'
+version = '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 
 repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	compile("org.springframework.boot:spring-boot-starter-websocket")
 	compile("org.springframework.boot:spring-boot-starter-thymeleaf")
 	compile("org.springframework.boot:spring-boot-starter-data-jpa")
 	compile("org.springframework.boot:spring-boot-starter-security")
-	compile("org.webjars:bootstrap:3.3.7")
-	compile("org.webjars:sockjs-client:1.1.2")
-	compile("org.webjars:stomp-websocket:2.3.3-1")
-	compile("org.projectlombok:lombok:1.16.16")
+	compile("org.webjars:bootstrap:${versions.bootstrap}")
+	compile("org.webjars:sockjs-client:${versions.sockjsClient}")
+	compile("org.webjars:stomp-websocket:${versions.stompWebsocket}")
+	compile("org.projectlombok:lombok:${versions.lombok}")
+	compile("org.apache.commons:commons-lang3:${versions.commonsLang3}")
+	compile("org.apache.commons:commons-collections4:${versions.commonscollections4}")
 /*	compile('org.springframework.boot:spring-boot-starter-web')*/
 	runtime("mysql:mysql-connector-java")
 	testCompile("org.springframework.boot:spring-boot-starter-test")

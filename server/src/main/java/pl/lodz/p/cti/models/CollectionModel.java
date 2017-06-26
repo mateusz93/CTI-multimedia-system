@@ -1,5 +1,10 @@
 package pl.lodz.p.cti.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,9 +15,13 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name="collections")
-public class CollectionModel{
+@Table(name = "collections")
+public class CollectionModel {
 
     @Id
     @GeneratedValue
@@ -22,32 +31,7 @@ public class CollectionModel{
     @Column(unique = true)
     private String name;
 
-    @OneToMany(cascade={CascadeType.ALL}, mappedBy = "collection", orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "collection", orphanRemoval = true)
     private List<CollectionObjectModel> collectionObjects;
 
-    public List<CollectionObjectModel> getCollectionObjects() {
-        return collectionObjects;
-    }
-
-    public CollectionModel(){}
-
-    public CollectionModel(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

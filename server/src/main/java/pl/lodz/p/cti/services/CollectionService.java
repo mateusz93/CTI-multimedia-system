@@ -1,20 +1,17 @@
 package pl.lodz.p.cti.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.repository.CollectionRepository;
 import pl.lodz.p.cti.models.CollectionModel;
+import pl.lodz.p.cti.repository.CollectionRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CollectionService {
-    private CollectionRepository collectionRepository;
 
-    @Autowired
-    CollectionService(CollectionRepository collectionRepository){
-        this.collectionRepository = collectionRepository;
-    }
+    private final CollectionRepository collectionRepository;
 
     public CollectionModel findOne(Long collectionId) {
         return collectionRepository.findOne(collectionId);

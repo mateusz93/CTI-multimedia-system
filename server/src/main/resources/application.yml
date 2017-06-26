@@ -20,9 +20,16 @@ spring:
     properties:
       hibernate:
         dialec: org.hibernate.dialect.MySQL5Dialect
+
 security:
   user: user
   password: password
+
+web-socket:
+  destinationPrefixes: /topic
+  prefixes: /app
+  paths: /cti-websocket
+
 logging:
   level:
     org:

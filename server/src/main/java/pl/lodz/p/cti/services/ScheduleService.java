@@ -1,20 +1,17 @@
 package pl.lodz.p.cti.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.repository.ScheduleRepository;
 import pl.lodz.p.cti.models.ScheduleModel;
+import pl.lodz.p.cti.repository.ScheduleRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ScheduleService {
-    private ScheduleRepository scheduleRepository;
 
-    @Autowired
-    ScheduleService(ScheduleRepository scheduleRepository){
-        this.scheduleRepository = scheduleRepository;
-    }
+    private final ScheduleRepository scheduleRepository;
 
     public List<ScheduleModel> findByTvId(Long id) {
         return scheduleRepository.findByTvId(id);
@@ -33,7 +30,7 @@ public class ScheduleService {
     }
 
     public void delete(Long scheduleId) {
-    	scheduleRepository.delete(scheduleId);
+        scheduleRepository.delete(scheduleId);
     }
 
     public ScheduleModel findOne(Long scheduleId) {

@@ -1,5 +1,10 @@
 package pl.lodz.p.cti.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -10,8 +15,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name="presentations")
+@Table(name = "presentations")
 public class PresentationModel implements Comparable<PresentationModel> {
 
     @Id
@@ -30,48 +39,10 @@ public class PresentationModel implements Comparable<PresentationModel> {
     @NotNull
     private LocalTime startTime;
 
-    public PresentationModel(){}
-
-    public PresentationModel(TvModel tv, CollectionModel collection, LocalTime startTime) {
-        this.tv = tv;
-        this.collection = collection;
-        this.startTime = startTime;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public TvModel getTv() {
-        return tv;
-    }
-
-    public void setTv(TvModel tv) {
-        this.tv = tv;
-    }
-
-    public CollectionModel getCollection() {
-        return collection;
-    }
-
-    public void setCollection(CollectionModel collection) {
-        this.collection = collection;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalTime startTime) {
-        this.startTime = startTime;
-    }
-
     @Override
     public int compareTo(PresentationModel o) {
-        return tv.getId().equals(o.getTv().getId())?(startTime.isBefore(o.getStartTime())?-1:(startTime.isAfter(o.getStartTime())?1:0)):(int)(tv.getId()-o.getTv().getId());
+        return tv.getId().equals(o.getTv().getId()) ?
+                (startTime.isBefore(o.getStartTime()) ? -1 : (startTime.isAfter(o.getStartTime()) ? 1 : 0)) :
+                (int) (tv.getId() - o.getTv().getId());
     }
 }

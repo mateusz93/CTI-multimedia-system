@@ -1,20 +1,17 @@
 package pl.lodz.p.cti.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.repository.ObjectRepository;
 import pl.lodz.p.cti.models.ObjectModel;
+import pl.lodz.p.cti.repository.ObjectRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ObjectService {
-    private ObjectRepository objectRepository;
 
-    @Autowired
-    ObjectService(ObjectRepository objectRepository){
-        this.objectRepository = objectRepository;
-    }
+    private final ObjectRepository objectRepository;
 
     public List<ObjectModel> findAll() {
         return objectRepository.findAll();

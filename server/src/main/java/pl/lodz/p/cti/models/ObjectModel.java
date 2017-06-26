@@ -1,5 +1,10 @@
 package pl.lodz.p.cti.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,8 +13,12 @@ import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
-@Table(name="objects")
+@Table(name = "objects")
 public class ObjectModel {
 
     @Id
@@ -17,7 +26,7 @@ public class ObjectModel {
     private Long id;
 
     @NotNull
-    @Column(unique=true)
+    @Column(unique = true)
     private String name;
 
     @NotNull
@@ -27,43 +36,4 @@ public class ObjectModel {
     @Column(name = "object", length = Integer.MAX_VALUE)
     private byte[] image;
 
-    public ObjectModel(){}
-
-    public ObjectModel(String name, String contentType, byte[] image) {
-        this.name = name;
-        this.contentType = contentType;
-        this.image = image;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
-    }
-
-    public byte[] getImage() {
-        return image;
-    }
-
-    public void setImage(byte[] image) {
-        this.image = image;
-    }
 }

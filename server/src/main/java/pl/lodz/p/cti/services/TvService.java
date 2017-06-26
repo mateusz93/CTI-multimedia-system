@@ -1,20 +1,17 @@
 package pl.lodz.p.cti.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.repository.TvRepository;
 import pl.lodz.p.cti.models.TvModel;
+import pl.lodz.p.cti.repository.TvRepository;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class TvService {
-    private TvRepository tvRepository;
 
-    @Autowired
-    TvService(TvRepository tvRepository){
-        this.tvRepository = tvRepository;
-    }
+    private final TvRepository tvRepository;
 
     public TvModel findByIp(String remoteAddr) {
         return tvRepository.findByIp(remoteAddr);

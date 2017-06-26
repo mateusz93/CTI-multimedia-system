@@ -1,23 +1,20 @@
 package pl.lodz.p.cti.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.repository.ConfigurationRepository;
 import pl.lodz.p.cti.models.ConfigurationModel;
+import pl.lodz.p.cti.repository.ConfigurationRepository;
 
 @Service
+@RequiredArgsConstructor
 public class ConfigurationService {
 
-    private ConfigurationRepository configurationRepository;
-
-    @Autowired
-    ConfigurationService(ConfigurationRepository configurationRepository){
-        this.configurationRepository = configurationRepository;
-    }
+    private final ConfigurationRepository configurationRepository;
 
     public ConfigurationModel findByName(String name) {
         return configurationRepository.findByName(name);
     }
+
     public ConfigurationModel save(ConfigurationModel configurationModel) {
         return configurationRepository.save(configurationModel);
     }

@@ -1,21 +1,18 @@
 package pl.lodz.p.cti.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import pl.lodz.p.cti.repository.PresentationRepository;
 import pl.lodz.p.cti.models.PresentationModel;
+import pl.lodz.p.cti.repository.PresentationRepository;
 
 import java.time.LocalTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PresentationService {
-    private PresentationRepository presentationRepository;
 
-    @Autowired
-    PresentationService(PresentationRepository presentationRepository){
-        this.presentationRepository = presentationRepository;
-    }
+    private final PresentationRepository presentationRepository;
 
     public List<PresentationModel> findByTvId(Long id) {
         return presentationRepository.findByTvId(id);
@@ -38,6 +35,6 @@ public class PresentationService {
     }
 
     public PresentationModel findByTvIdAndStartTime(Long tvId, LocalTime startTime) {
-        return presentationRepository.findByTvIdAndStartTime(tvId,startTime);
+        return presentationRepository.findByTvIdAndStartTime(tvId, startTime);
     }
 }
