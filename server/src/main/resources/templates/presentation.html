@@ -109,7 +109,14 @@
             setGalleryObjects(galleryObjects, [[${displayBubbles}]]);
         }
 
-        window.onload = connect;
+        window.onload = function(){
+        	connect();
+        	if (inIframe())
+        	{
+        		$('#gallery').width(1280);
+        		$('#gallery').height(720);
+        	}
+        };
         /*]]>*/
     </script>
   </body>

@@ -57,7 +57,7 @@
                 -->
                 <div class="col-sm-6 col-md-3" th:each="object : ${objects}">
                     <div class="thumbnail" th:if="${#strings.endsWith(object.contentType,'mp4')}">
-                        <video autoplay="autoplay" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" style="height:175px;width:262px" data-toggle="modal" th:attr="data-target='#myModal'+${object.id}" controls="controls" loop="loop"/>
+                        <video th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" style="height:175px;width:262px" data-toggle="modal" th:attr="data-target='#myModal'+${object.id}" controls="controls" loop="loop"/>
                     </div>
                     <div class="thumbnail" th:unless="${#strings.endsWith(object.contentType,'mp4')}">
                         <img class="img-responsive" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" style="height:175px;width:262px" data-toggle="modal" th:attr="data-target='#myModal'+${object.id}"/>
