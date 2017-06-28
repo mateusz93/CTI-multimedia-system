@@ -78,7 +78,7 @@ Main.keyDown = function()
 			break;
 		case tvKey.KEY_2:
 			if (exitPINIndex >= 0 && exitPINIndex < exitPINCode.length && exitPINCode.charAt(exitPINIndex) == '2') exitPINIndex++;
-			else exitPINIndex = 0;
+			else exitPINIndex = 1;
 			break;
 		case tvKey.KEY_3:
 			if (exitPINIndex >= 0 && exitPINIndex < exitPINCode.length && exitPINCode.charAt(exitPINIndex) == '3') exitPINIndex++;
