@@ -35,7 +35,7 @@ public class ContentTypeUtils implements InitializingBean {
 
     public boolean isSupported(String contentType) {
         log.info("Checking that '{}' is supported", contentType);
-        return !StringUtils.isBlank(contentType) &&
+        return StringUtils.isNotBlank(contentType) &&
                 contentTypes
                         .stream()
                         .filter(it -> it.equalsIgnoreCase(contentType))

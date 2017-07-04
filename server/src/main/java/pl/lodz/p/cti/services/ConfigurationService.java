@@ -53,7 +53,7 @@ public class ConfigurationService {
         model.addAttribute(DISPLAY_HEADER, getModifiedDisplayHeader(displayHeader));
         model.addAttribute(HEADER_TEXT, getModifiedHeaderText(headerText));
         model.addAttribute(PLACE_HOLDER, getModifiedPlaceHolder(placeholder));
-        model.addAttribute(OBJECTS, configurationRepository.findAll());
+        model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(TRUE_VALUE, BOOLEAN_TRUE);
         return CONFIGURATION_ENDPOINT;
     }
@@ -103,7 +103,7 @@ public class ConfigurationService {
     }
 
     private String getModifiedDisplayHeader(String displayHeader) {
-        ConfigurationModel displayHeaderObj = configurationRepository.findByName(displayHeader);
+        ConfigurationModel displayHeaderObj = configurationRepository.findByName(DISPLAY_HEADER);
         if (displayHeaderObj == null) {
             displayHeaderObj = new ConfigurationModel();
             displayHeaderObj.setName(displayHeader);
