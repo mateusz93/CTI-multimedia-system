@@ -21,14 +21,15 @@ spring:
       hibernate:
         dialec: org.hibernate.dialect.MySQL5Dialect
 
-security:
-  user: user
-  password: password
-
-web-socket:
-  destinationPrefixes: /topic
-  prefixes: /app
-  paths: /cti-websocket
+app:
+  web-socket:
+    destinationPrefixes: /topic
+    prefixes: /app
+    paths: /cti-websocket
+  security:
+    user: user
+    password: password
+  extension: video/mp4, image/jpeg, image/jpg, image/png, image/gif
 
 logging:
   level:

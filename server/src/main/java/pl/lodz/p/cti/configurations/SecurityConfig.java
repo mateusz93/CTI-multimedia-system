@@ -26,11 +26,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String ADMIN_ROLE = "ADMIN";
 
     @NotNull
-    @Value("${security.user}")
+    @Value("${app.security.user}")
     private String user;
 
     @NotNull
-    @Value("${security.password}")
+    @Value("${app.security.password}")
     private String password;
 
     @Override

@@ -6,7 +6,6 @@ import pl.lodz.p.cti.models.ScheduleModel;
 
 import java.util.List;
 
-@Transactional
 public interface ScheduleRepository extends JpaRepository<ScheduleModel, Long> {
     List<ScheduleModel> deleteByTvId(Long tvId);
     List<ScheduleModel> findByTvId(Long id);

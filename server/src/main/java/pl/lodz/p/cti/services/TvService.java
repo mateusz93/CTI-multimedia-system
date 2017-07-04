@@ -1,7 +1,9 @@
 package pl.lodz.p.cti.services;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import pl.lodz.p.cti.exceptions.TvModelDoesNotExistsException;
 import pl.lodz.p.cti.models.CollectionObjectModel;
@@ -23,6 +25,7 @@ import static pl.lodz.p.cti.utils.ActualScheduleFinder.findActualSchedule;
 import static pl.lodz.p.cti.utils.SessionIdentifierGenerator.nextSessionId;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TvService {
 
@@ -31,10 +34,22 @@ public class TvService {
     private final ScheduleRepository scheduleRepository;
     private final ObjectRepository objectRepository;
 
+    private static final String OBJECTS = "objects";
+    private static final String PLACE_HOLDER = "placeholder";
+    private static final String TV_ID = "tvId";
+    private static final String DISPLAY_TIME = "displayTime";
+    private static final String DISPLAY_BUBBLES = "displayBubbles";
+    private static final String DISPLAY_HEADER = "displayHeader";
+    private static final String HEADER_TEXT = "headerText";
+    private static final String TRUE_VALUE = "true";
+    private static final String INDEX_ENDPOINT = "index";
+    private static final String TV_ENDPOINT = "redirect:/tv/";
+    private static final String PRESENTATION_ENDPOINT = "presentation";
+
     public String index(HttpServletRequest request) {
         String ip = request.getRemoteAddr();
         TvModel tvModel = tvRepository.findByIp(ip);
-        return tvModel == null ? "index" : "redirect:/tv/" + tvModel.getHash() + "/";
+        return tvModel == null ? INDEX_ENDPOINT : TV_ENDPOINT + tvModel.getHash() + "/";
     }
 
     public String initialize(HttpServletRequest request, String name) {
@@ -46,7 +61,7 @@ public class TvService {
         if (name.length() < 1) {
             name = ip;
         }
-        return "redirect:/tv/" + tvRepository.save(TvModel.builder()
+        return TV_ENDPOINT + tvRepository.save(TvModel.builder()
                 .ip(ip)
                 .name(name)
                 .hash(hash)
@@ -59,40 +74,62 @@ public class TvService {
         if (tvModel == null) {
             throw new TvModelDoesNotExistsException(TvModel.PROPERTY_HASH, hash);
         }
-        ScheduleModel actualSchedule = findActualSchedule(scheduleRepository.findByTvId(tvModel.getId()));
-        if (actualSchedule == null) {
-            try {
-                ConfigurationModel placeholderObj = configurationRepository.findByName("placeholder");
-                if (placeholderObj != null) {
-                    ObjectModel placeholder = objectRepository.findOne(Long.valueOf(placeholderObj.getValue()));
-                    if (placeholder != null) {
-                        List<ObjectModel> objects = new ArrayList<>();
-                        objects.add(placeholder);
-                        model.addAttribute("objects", objects);
-                    } else {
-                        model.addAttribute("objects", null);
-                    }
-                } else {
-                    model.addAttribute("objects", null);
-                }
-            } catch (NumberFormatException nfe) {
-                //Ignore
-                model.addAttribute("objects", null);
-            }
-        } else {
-            model.addAttribute("objects", actualSchedule.getCollection().getCollectionObjects()
-                    .stream().map(CollectionObjectModel::getObjectModel).collect(Collectors.toList()));
-        }
-        model.addAttribute("tvId", tvModel.getId());
-        ConfigurationModel displayTime = configurationRepository.findByName("displayTime");
-        ConfigurationModel displayBubbles = configurationRepository.findByName("displayBubbles");
-        ConfigurationModel displayHeader = configurationRepository.findByName("displayHeader");
-        ConfigurationModel headerText = configurationRepository.findByName("headerText");
-        model.addAttribute("displayTime", displayTime == null ? 5 : Integer.valueOf(displayTime.getValue()));
-        model.addAttribute("displayBubbles", displayBubbles == null || displayBubbles.getValue().equals("true"));
-        model.addAttribute("displayHeader", displayHeader == null || displayHeader.getValue().equals("true"));
-        model.addAttribute("headerText", headerText == null ? "" : headerText.getValue());
-        return "presentation";
-
+        model.addAttribute(OBJECTS, getObjects(tvModel));
+        model.addAttribute(TV_ID, tvModel.getId());
+        model.addAttribute(DISPLAY_TIME, getDisplayTime());
+        model.addAttribute(DISPLAY_BUBBLES, getDisplayBubbles());
+        model.addAttribute(DISPLAY_HEADER, getDisplayHeader());
+        model.addAttribute(HEADER_TEXT, getHeaderText());
+        return PRESENTATION_ENDPOINT;
     }
+
+    private List<ObjectModel> getObjects(TvModel tvModel) {
+        ScheduleModel actualSchedule = findActualSchedule(scheduleRepository.findByTvId(tvModel.getId()));
+        if (actualSchedule != null) {
+            return actualSchedule.getCollection()
+                    .getCollectionObjects()
+                    .stream()
+                    .map(CollectionObjectModel::getObjectModel)
+                    .collect(Collectors.toList());
+        }
+        try {
+            ConfigurationModel placeholderObj = configurationRepository.findByName(PLACE_HOLDER);
+            if (placeholderObj == null) {
+                //TODO maybe better option will be return CollectionUtils.emptyCollection();
+                return null;
+            }
+            ObjectModel placeholder = objectRepository.findOne(Long.valueOf(placeholderObj.getValue()));
+            if (placeholder == null) {
+                //TODO maybe better option will be return CollectionUtils.emptyCollection();
+                return null;
+            }
+            List<ObjectModel> objects = new ArrayList<>();
+            objects.add(placeholder);
+            return objects;
+        } catch (NumberFormatException nfe) {
+            //TODO maybe better option will be return CollectionUtils.emptyCollection();
+            return null;
+        }
+    }
+
+    private int getDisplayTime() {
+        ConfigurationModel displayTime = configurationRepository.findByName(DISPLAY_TIME);
+        return displayTime == null ? 5 : Integer.valueOf(displayTime.getValue());
+    }
+
+    private boolean getDisplayBubbles() {
+        ConfigurationModel displayBubbles = configurationRepository.findByName(DISPLAY_BUBBLES);
+        return displayBubbles == null || displayBubbles.getValue().equalsIgnoreCase(TRUE_VALUE);
+    }
+
+    private boolean getDisplayHeader() {
+        ConfigurationModel displayHeader = configurationRepository.findByName(DISPLAY_HEADER);
+        return displayHeader == null || displayHeader.getValue().equalsIgnoreCase(TRUE_VALUE);
+    }
+
+    private String getHeaderText() {
+        ConfigurationModel headerText = configurationRepository.findByName(HEADER_TEXT);
+        return headerText == null ? StringUtils.EMPTY : headerText.getValue();
+    }
+
 }

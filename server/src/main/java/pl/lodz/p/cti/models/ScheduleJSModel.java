@@ -26,7 +26,7 @@ public class ScheduleJSModel {
     private Long event_length;
     private Long event_parent;
     private Long collection;
-    private static final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH);
+    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm", Locale.ENGLISH);
 
     public ScheduleJSModel(ScheduleModel model) {
         super();

@@ -2,11 +2,10 @@ package pl.lodz.p.cti.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import pl.lodz.p.cti.models.CollectionModel;
 import pl.lodz.p.cti.models.CollectionObjectModel;
-import pl.lodz.p.cti.models.PresentationModel;
-import pl.lodz.p.cti.models.ScheduleModel;
 import pl.lodz.p.cti.repository.CollectionObjectRepository;
 import pl.lodz.p.cti.repository.CollectionRepository;
 import pl.lodz.p.cti.repository.ObjectRepository;
@@ -22,6 +21,7 @@ import java.util.stream.Collectors;
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CollectionService {
 
@@ -31,58 +31,71 @@ public class CollectionService {
     private final ObjectRepository objectRepository;
     private final PresentationRepository presentationRepository;
 
+    private static final String COLLECTIONS = "collections";
+    private static final String OBJECTS = "objects";
+    private static final String MODIFY_COLLECTION_ENDPOINT = "modifyCollection";
+    private static final String COLLECTION_WRAPPER = "collectionWrapper";
+    private static final String GREEN = "green";
+
     public String getCollection(Model model) {
-        List<ScheduleModel> scheduleModelList = scheduleRepository.findAll();
-        List<Long> collectionIdUsedList = scheduleModelList.stream()
-                .map(scheduleModel -> scheduleModel.getCollection().getId())
-                .collect(Collectors.toList());
-        List<CollectionModel> collectionIdNotUsedList = collectionRepository.findByIdNotIn(collectionIdUsedList);
-        model.addAttribute("collections", collectionIdNotUsedList);
-        model.addAttribute("objects", objectRepository.findAll());
-        model.addAttribute("collectionWrapper", new CollectionWrapper());
-        return "modifyCollection";
+        model.addAttribute(COLLECTIONS, getCollectionsBySchedule());
+        model.addAttribute(OBJECTS, objectRepository.findAll());
+        model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
+        return MODIFY_COLLECTION_ENDPOINT;
     }
 
     public String addCollection(Model model, String name, CollectionWrapper collectionWrapper) {
-        List<CollectionObjectModel> collectionObjectModelList = new ArrayList<>();
-        Long i = 0L;
-        CollectionModel collectionModel = CollectionModel.builder()
-                .name(name)
-                .build();
-        collectionModel = collectionRepository.save(collectionModel);
-        for (Long value : collectionWrapper.getValues()) {
-            collectionObjectModelList.add(CollectionObjectModel.builder()
-                    .collection(collectionModel)
-                    .orderNumber(i)
-                    .objectModel(objectRepository.findOne(value))
-                    .build());
-            i++;
-        }
-        collectionObjectRepository.save(collectionObjectModelList);
-        List<PresentationModel> presentationModelList = presentationRepository.findAll();
-        List<Long> collectionIdUsedList = presentationModelList.stream()
-                .map(presentationModel -> presentationModel.getCollection().getId())
-                .collect(Collectors.toList());
-        List<CollectionModel> collectionIdNotUsedList = collectionRepository.findByIdNotIn(collectionIdUsedList);
-        model.addAttribute("collections", collectionIdNotUsedList);
-        model.addAttribute("objects", objectRepository.findAll());
-        model.addAttribute("collectionWrapper", new CollectionWrapper());
-        model.addAttribute("green", generateStatement(Statements.SAVE_COLLECTION_WITH_GIVEN_NAME_SUCCESS, name));
-        return "modifyCollection";
+        collectionObjectRepository.save(getCollectionObjectModels(name, collectionWrapper));
+
+        model.addAttribute(COLLECTIONS, getCollectionsByPresentation());
+        model.addAttribute(OBJECTS, objectRepository.findAll());
+        model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
+        model.addAttribute(GREEN, generateStatement(Statements.SAVE_COLLECTION_WITH_GIVEN_NAME_SUCCESS, name));
+        return MODIFY_COLLECTION_ENDPOINT;
 
     }
 
     public String deleteCollection(Model model, Long collectionId) {
         collectionRepository.delete(collectionId);
-        List<PresentationModel> presentationModelList = presentationRepository.findAll();
-        List<Long> collectionIdUsedList = presentationModelList.stream()
+
+        model.addAttribute(COLLECTIONS, getCollectionsByPresentation());
+        model.addAttribute(OBJECTS, objectRepository.findAll());
+        model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
+        model.addAttribute(GREEN, generateStatement(Statements.CHOSEN_COLLECTION_REMOVED));
+        return MODIFY_COLLECTION_ENDPOINT;
+    }
+
+    private List<CollectionObjectModel> getCollectionObjectModels(String name, CollectionWrapper collectionWrapper) {
+        List<CollectionObjectModel> collectionObjectModelList = new ArrayList<>();
+        CollectionModel collectionModel = collectionRepository.save(createCollectionModel(name));
+
+        for (long i = 0; i < collectionWrapper.getValues().size(); ++i) {
+            collectionObjectModelList.add(CollectionObjectModel.builder()
+                    .collection(collectionModel)
+                    .orderNumber(i)
+                    .objectModel(objectRepository.findOne(collectionWrapper.getValues().get((int) i)))
+                    .build());
+        }
+        return collectionObjectModelList;
+    }
+
+    private List<CollectionModel> getCollectionsBySchedule() {
+        return collectionRepository.findByIdNotIn(scheduleRepository.findAll()
+                .stream()
+                .map(scheduleModel -> scheduleModel.getCollection().getId())
+                .collect(Collectors.toList()));
+    }
+
+    private List<CollectionModel> getCollectionsByPresentation() {
+        return collectionRepository.findByIdNotIn(presentationRepository.findAll()
+                .stream()
                 .map(presentationModel -> presentationModel.getCollection().getId())
-                .collect(Collectors.toList());
-        List<CollectionModel> collectionIdNotUsedList = collectionRepository.findByIdNotIn(collectionIdUsedList);
-        model.addAttribute("collections", collectionIdNotUsedList);
-        model.addAttribute("objects", objectRepository.findAll());
-        model.addAttribute("collectionWrapper", new CollectionWrapper());
-        model.addAttribute("green", generateStatement(Statements.CHOSEN_COLLECTION_REMOVED));
-        return "modifyCollection";
+                .collect(Collectors.toList()));
+    }
+
+    private CollectionModel createCollectionModel(String name) {
+        return CollectionModel.builder()
+                .name(name)
+                .build();
     }
 }

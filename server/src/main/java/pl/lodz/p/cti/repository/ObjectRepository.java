@@ -6,7 +6,6 @@ import pl.lodz.p.cti.models.ObjectModel;
 
 import java.util.List;
 
-@Transactional
 public interface ObjectRepository extends JpaRepository<ObjectModel, Long> {
     ObjectModel findByName(String name);
     List<ObjectModel> findByIdNotIn(List<Long> objectIdUsedList);

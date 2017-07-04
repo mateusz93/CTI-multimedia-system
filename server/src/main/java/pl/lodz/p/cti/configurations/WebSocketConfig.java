@@ -14,15 +14,15 @@ import javax.validation.constraints.NotNull;
 public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
 
     @NotNull
-    @Value("${web-socket.destinationPrefixes}")
+    @Value("${app.web-socket.destinationPrefixes}")
     private String destinationPrefixes;
 
     @NotNull
-    @Value("${web-socket.prefixes}")
+    @Value("${app.web-socket.prefixes}")
     private String prefixes;
 
     @NotNull
-    @Value("${web-socket.paths}")
+    @Value("${app.web-socket.paths}")
     private String paths;
 
     @Override

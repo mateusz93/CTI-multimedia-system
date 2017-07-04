@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pl.lodz.p.cti.messages.ForceRefreshMessage;
 import pl.lodz.p.cti.models.ScheduleModel;
+import pl.lodz.p.cti.repository.ScheduleRepository;
 import pl.lodz.p.cti.services.ScheduleService;
 
 import java.time.DayOfWeek;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CronScheduler {
 
-    private final ScheduleService scheduleService;
+    private final ScheduleRepository scheduleRepository;
     private final SimpMessagingTemplate template;
 
     private static final String RECURRENCE_SPLITTER = "-";
@@ -28,7 +29,7 @@ public class CronScheduler {
     public void toExecuteEveryMinute() {
         LocalDateTime currentTime = LocalDateTime.now();
 
-        scheduleService.findAll()
+        scheduleRepository.findAll()
                 .stream()
                 .filter(schedule -> schedule.getStartTime().compareTo(currentTime) <= 0
                         && schedule.getEndTime().compareTo(currentTime) >= 0
