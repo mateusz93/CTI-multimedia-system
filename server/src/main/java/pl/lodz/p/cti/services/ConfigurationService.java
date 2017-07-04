@@ -1,6 +1,7 @@
 package pl.lodz.p.cti.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -8,6 +9,7 @@ import pl.lodz.p.cti.models.ConfigurationModel;
 import pl.lodz.p.cti.repository.ConfigurationRepository;
 import pl.lodz.p.cti.repository.ObjectRepository;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -29,16 +31,12 @@ public class ConfigurationService {
     private static final String CONFIGURATION_ENDPOINT = "configuration";
 
     public String getActualConfiguration(Model model) {
-        ConfigurationModel displayTime = configurationRepository.findByName(DISPLAY_TIME);
-        ConfigurationModel displayBubbles = configurationRepository.findByName(DISPLAY_BUBBLES);
-        ConfigurationModel displayHeader = configurationRepository.findByName(DISPLAY_HEADER);
-        ConfigurationModel headerText = configurationRepository.findByName(HEADER_TEXT);
-        ConfigurationModel placeholder = configurationRepository.findByName(PLACE_HOLDER);
-        model.addAttribute(DISPLAY_TIME, displayTime == null ? "5" : displayTime.getValue());
-        model.addAttribute(DISPLAY_BUBBLES, displayBubbles == null ? BOOLEAN_TRUE : displayBubbles.getValue());
-        model.addAttribute(DISPLAY_HEADER, displayHeader == null ? BOOLEAN_TRUE : displayHeader.getValue());
-        model.addAttribute(HEADER_TEXT, headerText == null ? "" : headerText.getValue());
-        model.addAttribute(PLACE_HOLDER, placeholder == null ? 0 : Long.valueOf(placeholder.getValue()));
+        log.info("Preparing configuration view");
+        model.addAttribute(DISPLAY_TIME, getOriginalDisplayTime());
+        model.addAttribute(DISPLAY_BUBBLES, getOriginalDisplayBubbles());
+        model.addAttribute(DISPLAY_HEADER, getOriginalDisplayHeader());
+        model.addAttribute(HEADER_TEXT, getOriginalHeaderText());
+        model.addAttribute(PLACE_HOLDER, getOriginalPlaceHolder());
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(TRUE_VALUE, BOOLEAN_TRUE);
         return CONFIGURATION_ENDPOINT;
@@ -46,6 +44,9 @@ public class ConfigurationService {
 
     public String modify(Model model, String displayTime, String displayBubbles, String displayHeader, String headerText, String placeholder) {
         commonService.forceTvRefreshAll();
+        log.info("Updating configuration. New values:");
+        log.info("Display Time: {} Display Bubbles: {} Display Header: {} Header Text: {}, Place Holder: {}",
+                displayTime, displayBubbles, displayHeader, headerText, placeholder);
 
         model.addAttribute(DISPLAY_TIME, getModifiedDisplayTime(displayTime));
         model.addAttribute(DISPLAY_BUBBLES, getModifiedDisplayBubbles(displayBubbles));
@@ -55,6 +56,11 @@ public class ConfigurationService {
         model.addAttribute(OBJECTS, configurationRepository.findAll());
         model.addAttribute(TRUE_VALUE, BOOLEAN_TRUE);
         return CONFIGURATION_ENDPOINT;
+    }
+
+    private Long getOriginalPlaceHolder() {
+        ConfigurationModel placeholder = configurationRepository.findByName(PLACE_HOLDER);
+        return placeholder == null ? 0 : Long.valueOf(placeholder.getValue());
     }
 
     private Long getModifiedPlaceHolder(String placeholder) {
@@ -75,6 +81,11 @@ public class ConfigurationService {
         return Long.parseLong(configurationRepository.save(placeholderObj).getValue());
     }
 
+    private String getOriginalHeaderText() {
+        ConfigurationModel headerText = configurationRepository.findByName(HEADER_TEXT);
+        return headerText == null ? "" : headerText.getValue();
+    }
+
     private String getModifiedHeaderText(String headerText) {
         ConfigurationModel headerTextObj = configurationRepository.findByName(HEADER_TEXT);
         if (headerTextObj == null) {
@@ -84,6 +95,11 @@ public class ConfigurationService {
         }
         headerTextObj.setValue(headerText);
         return configurationRepository.save(headerTextObj).getValue();
+    }
+
+    private String getOriginalDisplayHeader() {
+        ConfigurationModel displayHeader = configurationRepository.findByName(DISPLAY_HEADER);
+        return displayHeader == null ? BOOLEAN_TRUE : displayHeader.getValue();
     }
 
     private String getModifiedDisplayHeader(String displayHeader) {
@@ -99,6 +115,11 @@ public class ConfigurationService {
         return configurationRepository.save(displayHeaderObj).getValue();
     }
 
+    private String getOriginalDisplayBubbles() {
+        ConfigurationModel displayBubbles = configurationRepository.findByName(DISPLAY_BUBBLES);
+        return displayBubbles == null ? BOOLEAN_TRUE : displayBubbles.getValue();
+    }
+
     private String getModifiedDisplayBubbles(String displayBubbles) {
         ConfigurationModel displayBubblesObj = configurationRepository.findByName(DISPLAY_BUBBLES);
         if (displayBubblesObj == null) {
@@ -110,6 +131,11 @@ public class ConfigurationService {
             displayBubblesObj.setValue(displayBubbles);
         }
         return configurationRepository.save(displayBubblesObj).getValue();
+    }
+
+    private String getOriginalDisplayTime() {
+        ConfigurationModel displayTime = configurationRepository.findByName(DISPLAY_TIME);
+        return displayTime == null ? "5" : displayTime.getValue();
     }
 
     private String getModifiedDisplayTime(String displayTime) {

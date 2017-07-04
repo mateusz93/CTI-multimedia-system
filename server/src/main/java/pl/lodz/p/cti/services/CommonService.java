@@ -14,17 +14,17 @@ import pl.lodz.p.cti.repository.TvRepository;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class CommonService {
+public class CommonService {
 
     private final SimpMessagingTemplate template;
     private final TvRepository tvRepository;
 
-    void forceTvRefreshById(Long tvId) {
+    public void forceTvRefreshById(Long tvId) {
         log.info("Refreshing tv: {}", tvId);
-        template.convertAndSend("/topic/forceTvRefreshById", new ForceRefreshMessage(tvId));
+        template.convertAndSend("/topic/forceRefresh", new ForceRefreshMessage(tvId));
     }
 
-    void forceTvRefreshAll() {
+    public void forceTvRefreshAll() {
         log.info("Refreshing all tvs");
         for (TvModel tv : tvRepository.findAll()) {
             forceTvRefreshById(tv.getId());

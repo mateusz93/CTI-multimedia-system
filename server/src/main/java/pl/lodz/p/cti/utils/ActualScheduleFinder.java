@@ -20,6 +20,7 @@ public class ActualScheduleFinder {
     private static final String DAYS_SPLITTER = ",";
 
     public static ScheduleModel findActualSchedule(List<ScheduleModel> scheduleList) {
+        log.info("Looking for actual schedule");
         LocalDateTime currentTime = LocalDateTime.now();
         List<ScheduleModel> matchingFilter = new ArrayList<>();
         //Filtrowanie bez czasu
@@ -46,9 +47,14 @@ public class ActualScheduleFinder {
                     }
                 });
 
-        log.info(matchingFilter.toString());
+        return getScheduleModelByFilters(currentTime, matchingFilter);
+    }
+
+    private static ScheduleModel getScheduleModelByFilters(LocalDateTime currentTime, List<ScheduleModel> matchingFilter) {
+        log.info("Filter schedule by list of filters: {}", matchingFilter);
         for (ScheduleModel schedule : matchingFilter) {
             if (StringUtils.isEmpty(schedule.getRecurrence())) {
+                log.info("Found schedule: {}", schedule);
                 return schedule;
             }
             if (schedule.getStartTime().toLocalTime().isBefore(schedule.getEndTime().toLocalTime())
@@ -56,6 +62,7 @@ public class ActualScheduleFinder {
                     || schedule.getStartTime().toLocalTime().equals(currentTime.toLocalTime()))
                     && (schedule.getEndTime().toLocalTime().isAfter(currentTime.toLocalTime())
                     || schedule.getEndTime().toLocalTime().equals(currentTime.toLocalTime()))) {
+                log.info("Found schedule: {}", schedule);
                 return schedule;
             }
             if (schedule.getStartTime().toLocalTime().isAfter(schedule.getEndTime().toLocalTime())
@@ -63,9 +70,11 @@ public class ActualScheduleFinder {
                     || schedule.getStartTime().toLocalTime().equals(currentTime.toLocalTime())
                     || schedule.getEndTime().toLocalTime().isAfter(currentTime.toLocalTime())
                     || schedule.getEndTime().toLocalTime().equals(currentTime.toLocalTime()))) {
+                log.info("Found schedule: {}", schedule);
                 return schedule;
             }
         }
+        log.warn("Don't found any schedule!");
         return null;
     }
 

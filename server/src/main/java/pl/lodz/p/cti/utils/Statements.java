@@ -2,7 +2,9 @@ package pl.lodz.p.cti.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Statements {
 
@@ -21,6 +23,7 @@ public class Statements {
         for (String param : params) {
             string = string.replaceFirst(PARAM, param);
         }
+        log.debug("Generated statement: {}", statement);
         return string;
     }
 }

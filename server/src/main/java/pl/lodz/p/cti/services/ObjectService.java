@@ -1,6 +1,7 @@
 package pl.lodz.p.cti.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -41,23 +43,28 @@ public class ObjectService {
     private static final String RED = "red";
 
     public String getObjectsAndPresentations(Model model) {
+        log.info("Preparing objects view");
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(PRESENTATIONS, presentationRepository.findAll());
         return OBJECTS_ENDPOINT;
     }
 
     public String getObjects(Model model) {
+        log.info("Getting objects for modification");
         model.addAttribute(OBJECTS, getObjectsForModify());
         return MODIFY_OBJECT_ENDPOINT;
     }
 
     public String addObject(Model model, String name, MultipartFile image) throws ValidationException {
+        log.info("Adding new object with name: {}", name);
         if (image.isEmpty()) {
+            log.error("Object is missing!");
             throw new MissingNecessaryObjectException();
         }
         try {
             String contentType = image.getContentType();
             if (!contentTypeUtils.isSupported(contentType)) {
+                log.error("Object format is not supported!");
                 throw new UnsupportedExtensionException(contentType);
             }
             if (objectRepository.findByName(name) != null) {
@@ -72,6 +79,7 @@ public class ObjectService {
                 model.addAttribute(GREEN, generateStatement(Statements.SAVE_OBJECT_WITH_GIVEN_NAME_SUCCESS, name));
             }
         } catch (Exception e) {
+            log.error("Unexpected error occurred", e);
             throw new UnexpectedErrorException(e);
         }
         model.addAttribute(OBJECTS, getObjectsForModify());
@@ -79,6 +87,7 @@ public class ObjectService {
     }
 
     public String deleteObject(Model model, Long objectId) {
+        log.info("Deleting object by id: {}", objectId);
         objectRepository.delete(objectId);
 
         model.addAttribute(OBJECTS, getObjectsForModify());
@@ -87,6 +96,7 @@ public class ObjectService {
     }
 
     public void getObject(Long id, HttpServletResponse response) throws IOException {
+        log.info("Getting object by id: {}", id);
         ObjectModel pict = objectRepository.findOne(id);
 
         response.setContentType(contentTypeUtils.getExtension());

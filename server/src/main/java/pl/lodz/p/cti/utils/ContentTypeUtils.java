@@ -1,6 +1,7 @@
 package pl.lodz.p.cti.utils;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * @author Mateusz Wieczorek on 03.07.2017.
  */
+@Slf4j
 @Data
 @Component
 public class ContentTypeUtils implements InitializingBean {
@@ -29,6 +31,7 @@ public class ContentTypeUtils implements InitializingBean {
     }
 
     public boolean isSupported(String contentType) {
+        log.info("Checking that '{}' is supported", contentType);
         return !StringUtils.isBlank(contentType) &&
                 contentTypes
                         .stream()

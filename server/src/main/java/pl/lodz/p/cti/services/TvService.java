@@ -1,6 +1,7 @@
 package pl.lodz.p.cti.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import static pl.lodz.p.cti.utils.ActualScheduleFinder.findActualSchedule;
 import static pl.lodz.p.cti.utils.SessionIdentifierGenerator.nextSessionId;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -53,6 +55,7 @@ public class TvService {
     }
 
     public String initialize(HttpServletRequest request, String name) {
+        log.info("Initializing tv with name: {} from ip {}", name, request.getRemoteAddr());
         String ip = request.getRemoteAddr();
         String hash;
         do {
@@ -72,6 +75,7 @@ public class TvService {
     public String hash(Model model, String hash) throws TvModelDoesNotExistsException {
         TvModel tvModel = tvRepository.findByHash(hash);
         if (tvModel == null) {
+            log.error("Tv with hash '{}' not exist!", hash);
             throw new TvModelDoesNotExistsException(TvModel.PROPERTY_HASH, hash);
         }
         model.addAttribute(OBJECTS, getObjects(tvModel));
@@ -84,6 +88,7 @@ public class TvService {
     }
 
     private List<ObjectModel> getObjects(TvModel tvModel) {
+        log.info("Preparing objects for tv");
         ScheduleModel actualSchedule = findActualSchedule(scheduleRepository.findByTvId(tvModel.getId()));
         if (actualSchedule != null) {
             return actualSchedule.getCollection()

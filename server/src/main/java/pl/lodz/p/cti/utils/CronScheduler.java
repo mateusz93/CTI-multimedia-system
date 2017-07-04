@@ -3,13 +3,11 @@ package pl.lodz.p.cti.utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import pl.lodz.p.cti.messages.ForceRefreshMessage;
 import pl.lodz.p.cti.models.ScheduleModel;
 import pl.lodz.p.cti.repository.ScheduleRepository;
-import pl.lodz.p.cti.services.ScheduleService;
+import pl.lodz.p.cti.services.CommonService;
 
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -20,7 +18,7 @@ import java.time.LocalDateTime;
 public class CronScheduler {
 
     private final ScheduleRepository scheduleRepository;
-    private final SimpMessagingTemplate template;
+    private final CommonService commonService;
 
     private static final String RECURRENCE_SPLITTER = "-";
     private static final String DAYS_SPLITTER = ",";
@@ -28,6 +26,7 @@ public class CronScheduler {
     @Scheduled(cron = "0 * * * * ?")
     public void toExecuteEveryMinute() {
         LocalDateTime currentTime = LocalDateTime.now();
+        log.info("Scheduler started.");
 
         scheduleRepository.findAll()
                 .stream()
@@ -38,12 +37,12 @@ public class CronScheduler {
                 .forEach(schedule -> {
                     //Brak powtarzalności
                     if (StringUtils.isEmpty(schedule.getRecurrence())) {
-                        forceRefresh(schedule.getTv().getId());
+                        commonService.forceTvRefreshById(schedule.getTv().getId());
                     } else {
                         String[] recData = schedule.getRecurrence().split(RECURRENCE_SPLITTER);
                         //Co X dni
                         if (isDay(currentTime, schedule, recData)) {
-                            forceRefresh(schedule.getTv().getId());
+                            commonService.forceTvRefreshById(schedule.getTv().getId());
                         }
                         //Co X tygodni w [Y...] dniach tygodnia
                         if (isWeek(currentTime, schedule, recData)) {
@@ -71,14 +70,9 @@ public class CronScheduler {
                 weekDay = 7;
             }
             if (currentTime.toLocalDate().getDayOfWeek().equals(DayOfWeek.of(weekDay))) {
-                forceRefresh(schedule.getTv().getId());
+                commonService.forceTvRefreshById(schedule.getTv().getId());
             }
         }
-    }
-
-    private void forceRefresh(Long tvId) {
-        log.info("ForceRefresh!");
-        this.template.convertAndSend("/topic/forceRefresh", new ForceRefreshMessage(tvId));
     }
 
 }

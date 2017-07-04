@@ -1,6 +1,7 @@
 package pl.lodz.p.cti.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class CollectionService {
     private static final String GREEN = "green";
 
     public String getCollection(Model model) {
+        log.info("Preparing collections view");
         model.addAttribute(COLLECTIONS, getCollectionsBySchedule());
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
@@ -47,6 +50,7 @@ public class CollectionService {
     public String addCollection(Model model, String name, CollectionWrapper collectionWrapper) {
         collectionObjectRepository.save(getCollectionObjectModels(name, collectionWrapper));
 
+        log.info("Preparing collections view");
         model.addAttribute(COLLECTIONS, getCollectionsByPresentation());
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
@@ -56,8 +60,10 @@ public class CollectionService {
     }
 
     public String deleteCollection(Model model, Long collectionId) {
+        log.info("Deleting collection with id: {}", collectionId);
         collectionRepository.delete(collectionId);
 
+        log.info("Preparing collections view");
         model.addAttribute(COLLECTIONS, getCollectionsByPresentation());
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
@@ -66,6 +72,8 @@ public class CollectionService {
     }
 
     private List<CollectionObjectModel> getCollectionObjectModels(String name, CollectionWrapper collectionWrapper) {
+        log.info("Creating new collection with name: {}", name);
+        log.info("Collection sequence: {}", collectionWrapper.toString());
         List<CollectionObjectModel> collectionObjectModelList = new ArrayList<>();
         CollectionModel collectionModel = collectionRepository.save(createCollectionModel(name));
 
@@ -76,6 +84,7 @@ public class CollectionService {
                     .objectModel(objectRepository.findOne(collectionWrapper.getValues().get((int) i)))
                     .build());
         }
+        log.info("Collection created correctly");
         return collectionObjectModelList;
     }
 

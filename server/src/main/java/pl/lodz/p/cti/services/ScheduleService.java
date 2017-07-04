@@ -1,6 +1,7 @@
 package pl.lodz.p.cti.services;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -38,6 +40,7 @@ public class ScheduleService {
     private static final DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN, Locale.ENGLISH);
 
     public String getActualConfiguration(Model model, Long tvId) {
+        log.info("Getting actual schedule configuration for tv with id {}", tvId);
         TvModel tvModel = tvRepository.findOne(tvId);
         if (tvModel == null) {
             return MODIFY_PRESENTATION_ENDPOINT;
@@ -49,6 +52,7 @@ public class ScheduleService {
     }
 
     public String modify(Model model, Long tvId, List<ScheduleJSModel> schedules) {
+        log.info("Updating schedule configuration for tv with id {}", tvId);
         TvModel tvModel = tvRepository.findOne(tvId);
         if (tvModel == null) {
             return MODIFY_PRESENTATION_ENDPOINT;
@@ -62,8 +66,10 @@ public class ScheduleService {
         }
         schedulesToRemove.removeAll(schedulesToSave);
         for (ScheduleModel scheduleModel : schedulesToRemove) {
+            log.info("Deleting old schedules");
             scheduleRepository.delete(scheduleModel.getId());
         }
+        log.info("Preparing schedule configuration view after updating");
         model.addAttribute(COLLECTIONS, getCollectionConfiguration());
         model.addAttribute(SCHEDULES, schedules);
         model.addAttribute(TV, tvModel);
@@ -72,6 +78,7 @@ public class ScheduleService {
     }
 
     private ScheduleModel createScheduleModel(TvModel tvModel, ScheduleJSModel jsModel) {
+        log.info("Creating new schedule");
         ScheduleModel scheduleModel = null;
         if (jsModel.getId() != null) {
             scheduleModel = scheduleRepository.findOne(jsModel.getId());
@@ -93,6 +100,7 @@ public class ScheduleService {
         scheduleModel.setStartTime(LocalDateTime.parse(jsModel.getStart_date(), format));
         scheduleModel.setText(jsModel.getText());
         scheduleModel.setTv(tvModel);
+        log.info("Created schedule: {}", scheduleModel.toString());
         return scheduleModel;
     }
 

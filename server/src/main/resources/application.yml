@@ -32,10 +32,8 @@ app:
   extension: video/mp4, image/jpeg, image/jpg, image/png, image/gif
 
 logging:
-  level:
-    org:
-      springframework:
-        security: INFO
+  config: src/main/resources/logback.xml
+  file: logs/cti_logs
 
 server:
   port: 80
