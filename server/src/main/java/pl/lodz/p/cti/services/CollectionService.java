@@ -10,14 +10,11 @@ import pl.lodz.p.cti.models.CollectionObjectModel;
 import pl.lodz.p.cti.repository.CollectionObjectRepository;
 import pl.lodz.p.cti.repository.CollectionRepository;
 import pl.lodz.p.cti.repository.ObjectRepository;
-import pl.lodz.p.cti.repository.PresentationRepository;
-import pl.lodz.p.cti.repository.ScheduleRepository;
 import pl.lodz.p.cti.utils.CollectionWrapper;
 import pl.lodz.p.cti.utils.Statements;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
@@ -29,9 +26,7 @@ public class CollectionService {
 
     private final CollectionRepository collectionRepository;
     private final CollectionObjectRepository collectionObjectRepository;
-    private final ScheduleRepository scheduleRepository;
     private final ObjectRepository objectRepository;
-    private final PresentationRepository presentationRepository;
 
     private static final String COLLECTIONS = "collections";
     private static final String OBJECTS = "objects";
@@ -41,7 +36,7 @@ public class CollectionService {
 
     public String getCollection(Model model) {
         log.info("Preparing collections view");
-        model.addAttribute(COLLECTIONS, getCollectionsBySchedule());
+        model.addAttribute(COLLECTIONS, getCollections());
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
         return MODIFY_COLLECTION_ENDPOINT;
@@ -51,7 +46,7 @@ public class CollectionService {
         collectionObjectRepository.save(getCollectionObjectModels(name, collectionWrapper));
 
         log.info("Preparing collections view");
-        model.addAttribute(COLLECTIONS, getCollectionsByPresentation());
+        model.addAttribute(COLLECTIONS, getCollections());
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
         model.addAttribute(GREEN, generateStatement(Statements.SAVE_COLLECTION_WITH_GIVEN_NAME_SUCCESS, name));
@@ -64,7 +59,7 @@ public class CollectionService {
         collectionRepository.delete(collectionId);
 
         log.info("Preparing collections view");
-        model.addAttribute(COLLECTIONS, getCollectionsByPresentation());
+        model.addAttribute(COLLECTIONS, getCollections());
         model.addAttribute(OBJECTS, objectRepository.findAll());
         model.addAttribute(COLLECTION_WRAPPER, new CollectionWrapper());
         model.addAttribute(GREEN, generateStatement(Statements.CHOSEN_COLLECTION_REMOVED));
@@ -88,18 +83,8 @@ public class CollectionService {
         return collectionObjectModelList;
     }
 
-    private List<CollectionModel> getCollectionsBySchedule() {
-        return collectionRepository.findByIdNotIn(scheduleRepository.findAll()
-                .stream()
-                .map(scheduleModel -> scheduleModel.getCollection().getId())
-                .collect(Collectors.toList()));
-    }
-
-    private List<CollectionModel> getCollectionsByPresentation() {
-        return collectionRepository.findByIdNotIn(presentationRepository.findAll()
-                .stream()
-                .map(presentationModel -> presentationModel.getCollection().getId())
-                .collect(Collectors.toList()));
+    private List<CollectionModel> getCollections() {
+        return collectionRepository.findAll();
     }
 
     private CollectionModel createCollectionModel(String name) {

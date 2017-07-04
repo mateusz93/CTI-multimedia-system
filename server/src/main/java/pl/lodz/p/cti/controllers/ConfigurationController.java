@@ -1,7 +1,6 @@
 package pl.lodz.p.cti.controllers;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +16,6 @@ import java.util.List;
 /**
  * @author Mateusz Wieczorek on 28.06.2017.
  */
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ConfigurationController {

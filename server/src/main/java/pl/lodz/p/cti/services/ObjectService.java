@@ -11,7 +11,6 @@ import pl.lodz.p.cti.exceptions.UnexpectedErrorException;
 import pl.lodz.p.cti.exceptions.UnsupportedExtensionException;
 import pl.lodz.p.cti.exceptions.ValidationException;
 import pl.lodz.p.cti.models.ObjectModel;
-import pl.lodz.p.cti.repository.CollectionObjectRepository;
 import pl.lodz.p.cti.repository.ObjectRepository;
 import pl.lodz.p.cti.repository.PresentationRepository;
 import pl.lodz.p.cti.utils.ContentTypeUtils;
@@ -20,7 +19,6 @@ import pl.lodz.p.cti.utils.Statements;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
@@ -30,7 +28,6 @@ import static pl.lodz.p.cti.utils.Statements.generateStatement;
 @RequiredArgsConstructor
 public class ObjectService {
 
-    private final CollectionObjectRepository collectionObjectRepository;
     private final ObjectRepository objectRepository;
     private final PresentationRepository presentationRepository;
     private final ContentTypeUtils contentTypeUtils;
@@ -50,8 +47,8 @@ public class ObjectService {
     }
 
     public String getObjects(Model model) {
-        log.info("Getting objects for modification");
-        model.addAttribute(OBJECTS, getObjectsForModify());
+        log.info("Getting objects");
+        model.addAttribute(OBJECTS, getObjects());
         return MODIFY_OBJECT_ENDPOINT;
     }
 
@@ -82,7 +79,7 @@ public class ObjectService {
             log.error("Unexpected error occurred", e);
             throw new UnexpectedErrorException(e);
         }
-        model.addAttribute(OBJECTS, getObjectsForModify());
+        model.addAttribute(OBJECTS, getObjects());
         return MODIFY_OBJECT_ENDPOINT;
     }
 
@@ -90,7 +87,7 @@ public class ObjectService {
         log.info("Deleting object by id: {}", objectId);
         objectRepository.delete(objectId);
 
-        model.addAttribute(OBJECTS, getObjectsForModify());
+        model.addAttribute(OBJECTS, getObjects());
         model.addAttribute(GREEN, generateStatement(Statements.CHOSEN_OBJECT_REMOVED));
         return MODIFY_OBJECT_ENDPOINT;
     }
@@ -104,10 +101,7 @@ public class ObjectService {
         response.getOutputStream().close();
     }
 
-    private List<ObjectModel> getObjectsForModify() {
-        return objectRepository.findByIdNotIn(collectionObjectRepository.findAll()
-                .stream()
-                .map(collectionObjectModel -> collectionObjectModel.getObjectModel().getId())
-                .collect(Collectors.toList()));
+    private List<ObjectModel> getObjects() {
+        return objectRepository.findAll();
     }
 }
