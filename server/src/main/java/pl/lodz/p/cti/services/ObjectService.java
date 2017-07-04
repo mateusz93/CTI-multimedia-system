@@ -10,7 +10,10 @@ import pl.lodz.p.cti.exceptions.MissingNecessaryObjectException;
 import pl.lodz.p.cti.exceptions.UnexpectedErrorException;
 import pl.lodz.p.cti.exceptions.UnsupportedExtensionException;
 import pl.lodz.p.cti.exceptions.ValidationException;
+import pl.lodz.p.cti.models.CollectionModel;
+import pl.lodz.p.cti.models.CollectionObjectModel;
 import pl.lodz.p.cti.models.ObjectModel;
+import pl.lodz.p.cti.repository.CollectionObjectRepository;
 import pl.lodz.p.cti.repository.ObjectRepository;
 import pl.lodz.p.cti.repository.PresentationRepository;
 import pl.lodz.p.cti.utils.ContentTypeUtils;
@@ -19,6 +22,7 @@ import pl.lodz.p.cti.utils.Statements;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static pl.lodz.p.cti.utils.Statements.generateStatement;
 
@@ -31,6 +35,9 @@ public class ObjectService {
     private final ObjectRepository objectRepository;
     private final PresentationRepository presentationRepository;
     private final ContentTypeUtils contentTypeUtils;
+    private final CollectionObjectRepository collectionObjectRepository;
+	private final CollectionService collectionService;
+	private final ConfigurationService configurationService;
 
     private static final String OBJECTS = "objects";
     private static final String PRESENTATIONS = "presentations";
@@ -84,11 +91,26 @@ public class ObjectService {
     }
 
     public String deleteObject(Model model, Long objectId) {
-        log.info("Deleting object by id: {}", objectId);
-        objectRepository.delete(objectId);
-
+    	if (!configurationService.getOriginalPlaceHolder().equals(objectId))
+    	{
+            log.info("Deleting object by id: {}", objectId);
+	    	List<CollectionObjectModel> affectedCollectionModels = collectionObjectRepository.findByObjectModelId(objectId);
+	    	collectionObjectRepository.deleteInBatch(affectedCollectionModels);
+	    	objectRepository.delete(objectId);
+	    	
+	    	List<CollectionModel> emptyAffectedCollections = affectedCollectionModels
+	    			.stream()
+	    			.map(e -> e.getCollection())
+	    			.filter(e -> e.getCollectionObjects().size() == 0)
+	    			.collect(Collectors.toList());
+	    	collectionService.delete(emptyAffectedCollections);
+	        model.addAttribute(GREEN, generateStatement(Statements.CHOSEN_OBJECT_REMOVED));
+    	}
+    	else
+    	{
+    		model.addAttribute(RED, generateStatement(Statements.OBJECT_IN_USE_AS_PLACEHOLDER));
+    	}
         model.addAttribute(OBJECTS, getObjects());
-        model.addAttribute(GREEN, generateStatement(Statements.CHOSEN_OBJECT_REMOVED));
         return MODIFY_OBJECT_ENDPOINT;
     }
 

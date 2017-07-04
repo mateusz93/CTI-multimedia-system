@@ -8,4 +8,5 @@ import java.util.List;
 public interface ScheduleRepository extends JpaRepository<ScheduleModel, Long> {
     List<ScheduleModel> deleteByTvId(Long tvId);
     List<ScheduleModel> findByTvId(Long id);
+    List<ScheduleModel> findByCollectionId(Long id);
 }

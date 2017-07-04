@@ -58,7 +58,7 @@ public class ConfigurationService {
         return CONFIGURATION_ENDPOINT;
     }
 
-    private Long getOriginalPlaceHolder() {
+    public Long getOriginalPlaceHolder() {
         ConfigurationModel placeholder = configurationRepository.findByName(PLACE_HOLDER);
         return placeholder == null ? 0 : Long.valueOf(placeholder.getValue());
     }

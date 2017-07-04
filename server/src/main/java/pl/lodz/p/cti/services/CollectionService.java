@@ -10,6 +10,7 @@ import pl.lodz.p.cti.models.CollectionObjectModel;
 import pl.lodz.p.cti.repository.CollectionObjectRepository;
 import pl.lodz.p.cti.repository.CollectionRepository;
 import pl.lodz.p.cti.repository.ObjectRepository;
+import pl.lodz.p.cti.repository.ScheduleRepository;
 import pl.lodz.p.cti.utils.CollectionWrapper;
 import pl.lodz.p.cti.utils.Statements;
 
@@ -27,6 +28,7 @@ public class CollectionService {
     private final CollectionRepository collectionRepository;
     private final CollectionObjectRepository collectionObjectRepository;
     private final ObjectRepository objectRepository;
+	private final ScheduleRepository scheduleRepository;
 
     private static final String COLLECTIONS = "collections";
     private static final String OBJECTS = "objects";
@@ -56,7 +58,7 @@ public class CollectionService {
 
     public String deleteCollection(Model model, Long collectionId) {
         log.info("Deleting collection with id: {}", collectionId);
-        collectionRepository.delete(collectionId);
+        delete(collectionId);
 
         log.info("Preparing collections view");
         model.addAttribute(COLLECTIONS, getCollections());
@@ -92,4 +94,19 @@ public class CollectionService {
                 .name(name)
                 .build();
     }
+
+	public void delete(Long collectionId) {
+		// TODO Auto-generated method stub
+        scheduleRepository.delete(scheduleRepository.findByCollectionId(collectionId));
+        collectionRepository.delete(collectionId);
+	}
+
+	public void delete(List<CollectionModel> collections) {
+		// TODO Auto-generated method stub
+		while (collections.size() > 0)
+		{
+			delete(collections.get(0).getId());
+			collections.remove(0);
+		}
+	}
 }

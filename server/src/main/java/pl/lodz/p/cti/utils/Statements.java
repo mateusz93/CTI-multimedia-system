@@ -15,6 +15,7 @@ public class Statements {
     public static final String CHOSEN_COLLECTION_REMOVED = "Udało sie usunąć wybraną kolekcję!";
     public static final String SAVE_PRESENTATION_WITH_GIVEN_NAME_SUCCESS = "Udało się zapisać prezentację w bazie danych";
     public static final String PRESENTATION_WITH_GIVEN_DATA_ALREADY_EXISTS = "Prezentacja dla podanego telewizora i podanej godziny już istnieje w bazie danych!";
+	public static final String OBJECT_IN_USE_AS_PLACEHOLDER = "Ten obiekt jest wyświetlany przy braku prezentacji. Aby go usunąć najpierw ustaw inny obiekt do tego celu w konfiguracji!";
 
     private static String PARAM = "PARAM";
 

@@ -16,7 +16,7 @@
             for(var i = sourceNumberOfRows ; i < destinationNumberOfRows ; i++) {
                 var row = table.insertRow(i+1);
                 var cell1 = row.insertCell(0);
-                cell1.innerText=i;
+                cell1.innerText=i + 1;
                 var selectList = document.createElement("select");
                 selectList.name="values["+i+"]";
                 for (var j = 0; j < objects.length; j++) {
@@ -75,8 +75,12 @@
                         <select name="collectionId" id="collectionId">
                             <option th:each="collection : ${collections}" th:value="${collection.id}" th:text="${collection.name}"></option>
                         </select><br/>
-                        * - na liście widoczne są tylko kolekcje niewykorzystywane w żadnej prezentacji!
                     </div>
+                </div>
+                <div class="row">
+                	<div class="col-xs-12">
+                        * - Usunięcie kolekcji spowoduje usunięcie również wszystkich wystąpień w harmonogramie związanych z tą kolekcją!
+                	</div>
                 </div>
                 <div class="row">
                     <div class="col-xs-12"><input type="submit" value="Usuń kolekcję" class="btn btn-danger btn-block" /></div>
