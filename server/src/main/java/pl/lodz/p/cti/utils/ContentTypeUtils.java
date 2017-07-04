@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Mateusz Wieczorek on 03.07.2017.
@@ -27,7 +28,9 @@ public class ContentTypeUtils implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        contentTypes = Arrays.asList(extension.split(","));
+        contentTypes = Arrays.stream(extension.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
     }
 
     public boolean isSupported(String contentType) {
