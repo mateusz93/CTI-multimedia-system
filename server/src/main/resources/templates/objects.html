@@ -73,7 +73,7 @@
                             <h4 class="modal-title" id="myModalLabel" th:text="${object.name}"></h4>
                         </div>
                         <div class="modal-body" th:if="${#strings.endsWith(object.contentType,'mp4')}">
-                            <video style="width:100%" autoplay="autoplay" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" controls="controls" loop="loop"/>
+                            <video style="width:100%" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}" controls="controls" loop="loop"/>
                         </div>
                         <div class="modal-body" th:unless="${#strings.endsWith(object.contentType,'mp4')}">
                             <img class="img-responsive" th:src="@{/getObject(id=${object.id})}" th:alt="${object.name}"/>
